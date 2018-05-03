@@ -1,1 +1,3 @@
 include 'desktop', 'ios', 'core'
+include 'server'
+
