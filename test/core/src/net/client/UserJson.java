@@ -1,12 +1,30 @@
 package net.client;
 
+import java.util.Objects;
+
 public class UserJson {
 
-    private String username;
-    private String password;
+    private String userName=null;
+    private String mdp=null;
+    UserJson(String userName,String motDePasse){
+        this.userName=userName;
+        mdp=motDePasse;
+    }
 
-    public UserJson(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserJson user = (UserJson) o;
+        return Objects.equals(getUserName(), user.getUserName()) &&
+                Objects.equals(mdp, user.mdp);
     }
 }

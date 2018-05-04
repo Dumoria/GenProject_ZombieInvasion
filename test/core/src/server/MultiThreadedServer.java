@@ -1,9 +1,8 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import com.google.gson.*;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 public class MultiThreadedServer {
 
     final static Logger LOG = Logger.getLogger(MultiThreadedServer.class.getName());
+    static UserList userList;
 
     int port;
 
@@ -29,8 +29,32 @@ public class MultiThreadedServer {
      */
     public MultiThreadedServer(int port) {
         this.port = port;
+        chargeUserList("Player.json");
     }
+    void chargeUserList(String JsonFileName){
+        Gson moteurJson = new Gson();
+        String stringJson = lireStringDepuisFichier(JsonFileName);
+        userList = moteurJson.fromJson(stringJson, UserList.class);
+    }
+    public String lireStringDepuisFichier(String fileName){
 
+        String lignes="";
+        try{
+            InputStream flux=new FileInputStream(fileName);
+            InputStreamReader lecture=new InputStreamReader(flux);
+            BufferedReader buff=new BufferedReader(lecture);
+            String ligne;
+            while ((ligne=buff.readLine())!=null){
+                lignes+=ligne;
+            }
+            buff.close();
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+        }
+
+return lignes;
+    }
     /**
      * This method initiates the process. The server creates a socket and binds it
      * to the previously specified port. It then waits for clients in a infinite
