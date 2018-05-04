@@ -2,6 +2,8 @@ package net.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +35,17 @@ public class Client {
 
     //---------------Methods-------------------------------------
 
+    @FXML
+    TextField username;
+    public void loginUser(){
+        String login=username.getText();
+}
+public void createUser(){
+
+}
+public void consultStats(){
+
+}
     public void auth(String username, String password) throws IOException{
         if(!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
