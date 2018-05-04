@@ -1,0 +1,9 @@
+{
+	"users": [{
+		"username": "Fabrice",
+		"mdp": "12345"
+	}, {
+		"username": "Arno",
+		"mdp": "123456"
+	}]
+}
