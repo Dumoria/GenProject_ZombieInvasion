@@ -18,12 +18,13 @@ public class Client {
     private BufferedReader in;
     private PrintWriter out;
     private boolean connected;
-    private static Gson gson;
-
+    private Gson gson;
+    private int role;
 
     //---------------Constructor---------------------------------
     public Client() {
         this.connected = false;
+        role = 0;
 
         //Prépare le moteur gson
         gson = new GsonBuilder().setPrettyPrinting().create();
@@ -37,7 +38,7 @@ public class Client {
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
         gson.toJson(new UserJson(username, password), out);
         out.flush();
-
+        role = Integer.parseInt(in.readLine());
     }
 
     public void connect(String server, int port) throws IOException {
