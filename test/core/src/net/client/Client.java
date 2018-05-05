@@ -37,8 +37,19 @@ public class Client {
 
     @FXML
     TextField username;
-    public void loginUser(){
+    @FXML
+    TextField password;
+    public void loginUser()throws IOException{
         String login=username.getText();
+        String mdp=password.getText();
+        if(login.isEmpty()&&mdp.isEmpty()){
+            System.out.println("error");
+        }else{
+            connect(Protocol.DEFAULT_ADDRESS,Protocol.DEFAULT_PORT);
+            auth(login,mdp);
+        }
+
+
 }
 public void createUser(){
 
@@ -49,14 +60,16 @@ public void consultStats(){
     public void auth(String username, String password) throws IOException{
         if(!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
+        System.out.println(in.readLine());
         gson.toJson(new UserJson(username, password), out);
         out.flush();
-        role = Integer.parseInt(in.readLine());
+        //role = Integer.parseInt(in.readLine());
     }
 
     public void connect(String server, int port) throws IOException {
         socket = new Socket(server, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        in.readLine();
         out = new PrintWriter(socket.getOutputStream());
         connected = true;
     }

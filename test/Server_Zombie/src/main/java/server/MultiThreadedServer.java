@@ -1,4 +1,4 @@
-package net.server;
+package server;
 
 import com.google.gson.*;
 
@@ -20,6 +20,8 @@ public class MultiThreadedServer {
     final static Logger LOG = Logger.getLogger(MultiThreadedServer.class.getName());
     static UserList userList;
 
+    Gson moteurJson = new Gson();
+
     int port;
 
     /**
@@ -31,30 +33,31 @@ public class MultiThreadedServer {
         this.port = port;
         chargeUserList("Player.json");
     }
-    void chargeUserList(String JsonFileName){
-        Gson moteurJson = new Gson();
+
+    void chargeUserList(String JsonFileName) {
         String stringJson = lireStringDepuisFichier(JsonFileName);
         userList = moteurJson.fromJson(stringJson, UserList.class);
     }
-    public String lireStringDepuisFichier(String fileName){
 
-        String lignes="";
-        try{
-            InputStream flux=new FileInputStream(fileName);
-            InputStreamReader lecture=new InputStreamReader(flux);
-            BufferedReader buff=new BufferedReader(lecture);
+    public String lireStringDepuisFichier(String fileName) {
+
+        String lignes = "";
+        try {
+            InputStream flux = new FileInputStream(fileName);
+            InputStreamReader lecture = new InputStreamReader(flux);
+            BufferedReader buff = new BufferedReader(lecture);
             String ligne;
-            while ((ligne=buff.readLine())!=null){
-                lignes+=ligne;
+            while ((ligne = buff.readLine()) != null) {
+                lignes += ligne;
             }
             buff.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
 
-return lignes;
+        return lignes;
     }
+
     /**
      * This method initiates the process. The server creates a socket and binds it
      * to the previously specified port. It then waits for clients in a infinite
@@ -124,20 +127,17 @@ return lignes;
             @Override
             public void run() {
                 String line;
-                boolean shouldRun = true;
 
                 out.println("Welcome to the Multi-Threaded Server.\nSend me text lines and conclude with the BYE command.");
                 out.flush();
                 try {
-                    LOG.info("Reading until client sends BYE or closes the connection...");
-                    while ((shouldRun) && (line = in.readLine()) != null) {
-                        if (line.equalsIgnoreCase("bye")) {
-                            shouldRun = false;
-                        }
-                        out.println("> " + line.toUpperCase());
-                        out.flush();
-                    }
-
+                    LOG.info("Reading the client data or closes the connection...");
+                    line = in.readLine();
+                    User user = moteurJson.fromJson(line, User.class);
+                    if(userList.getUsers().contains(user))
+                        out.write("connected");
+                    else
+                        out.write("disconnected");
                     LOG.info("Cleaning up resources...");
                     clientSocket.close();
                     in.close();
