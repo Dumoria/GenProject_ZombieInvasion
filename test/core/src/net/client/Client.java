@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-
+import net.protocol.Protocol;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +23,12 @@ public class Client {
     private Gson gson;
     private int role;
 
+    @FXML
+    private TextField username;
+
+    @FXML
+    private TextField password;
+
     //---------------Constructor---------------------------------
     public Client() {
         this.connected = false;
@@ -33,23 +39,23 @@ public class Client {
     }
 
 
+
+
     //---------------Methods-------------------------------------
 
-    @FXML
-    TextField username;
-    public void loginUser(){
-        String login=username.getText();
-}
-public void createUser(){
 
-}
-public void consultStats(){
+    public void createUser(){
 
-}
-    public void auth(String username, String password) throws IOException{
+    }
+
+    public void consultStats(){
+
+    }
+
+    public void loginUser() throws IOException{
         if(!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
-        gson.toJson(new UserJson(username, password), out);
+        gson.toJson(new UserJson(username.getText(), password.getText()), out);
         out.flush();
         role = Integer.parseInt(in.readLine());
     }
