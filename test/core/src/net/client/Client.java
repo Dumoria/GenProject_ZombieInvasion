@@ -33,13 +33,9 @@ public class Client {
     public Client() {
         this.connected = false;
         role = 0;
-
         //Prépare le moteur gson
         gson = new GsonBuilder().setPrettyPrinting().create();
     }
-
-
-
 
     //---------------Methods-------------------------------------
 
@@ -53,16 +49,26 @@ public class Client {
     }
 
     public void loginUser() throws IOException{
+        String usernameTmp = username.getText();
+        String passwordTmp = password.getText();
+
         if(!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
-        gson.toJson(new UserJson(username.getText(), password.getText()), out);
+        if(usernameTmp.isEmpty() || passwordTmp.isEmpty()){
+            System.out.println("Error: Username and/or Password should not be empty");
+        }
+
+        gson.toJson(new UserJson(usernameTmp, passwordTmp), out);
         out.flush();
-        role = Integer.parseInt(in.readLine());
+
+        //read response from server
+        //role = Integer.parseInt(in.readLine());
     }
 
     public void connect(String server, int port) throws IOException {
         socket = new Socket(server, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        in.readLine();
         out = new PrintWriter(socket.getOutputStream());
         connected = true;
     }

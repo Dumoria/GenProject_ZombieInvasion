@@ -1,4 +1,4 @@
-package net.server;
+package server;
 
 public class User {
     private String userName=null;
