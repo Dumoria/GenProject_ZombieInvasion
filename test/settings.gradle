@@ -1,3 +1,8 @@
 include 'desktop', 'ios', 'core'
 include 'server'
 
+include 'Client_Zombi'
+findProject(':Client_Zombi')?.name = '12'
+include 'Server_Zombi'
+findProject(':Server_Zombi')?.name = '11'
+

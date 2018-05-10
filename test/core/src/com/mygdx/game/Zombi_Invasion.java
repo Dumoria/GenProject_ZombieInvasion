@@ -13,7 +13,7 @@ public class Zombi_Invasion extends Game {
 
 	@Override
 	public void create () {
-		this.setScreen(new LoginScreen(this));
+		//this.setScreen(new LoginScreen(this));
 		//batch = new SpriteBatch();
 		//img = new Texture("core/assets/badlogic.jpg");
 	}
