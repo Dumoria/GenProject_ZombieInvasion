@@ -1,4 +1,4 @@
-package net.client;
+package net.protocol;
 
 public class Protocol {
 

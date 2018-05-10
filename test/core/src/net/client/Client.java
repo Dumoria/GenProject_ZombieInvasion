@@ -1,9 +1,12 @@
 package net.client;
 
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
+//import javafx.fxml.FXML;
+//import javafx.scene.control.TextField;
+//import javafx.fxml.FXML;
+import com.mygdx.game.LoginScreen;
 import net.protocol.Protocol;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,16 +26,20 @@ public class Client {
     private Gson gson;
     private int role;
 
-    @FXML
+    private LoginScreen loginScreen;
     private TextField username;
-
-    @FXML
     private TextField password;
 
     //---------------Constructor---------------------------------
-    public Client() {
+    public Client(LoginScreen loginScreen) {
         this.connected = false;
+        this.loginScreen = loginScreen;
+
+        this.username = loginScreen.getUsername();
+        this.password = loginScreen.getPassword();
         role = 0;
+
+
         //Prépare le moteur gson
         gson = new GsonBuilder().setPrettyPrinting().create();
     }
