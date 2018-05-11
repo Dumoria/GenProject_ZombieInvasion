@@ -2,6 +2,7 @@ package game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Hero {
 
@@ -16,7 +17,7 @@ public class Hero {
     private final int FULL_CHARGOR = 15;
 
 
-    private Circle hero;
+    private Rectangle hero; //check if circle
     private Texture herosImage;
 
 
@@ -77,5 +78,33 @@ public class Hero {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getPrcHealth() {
+        return prcHealth;
+    }
+
+    public int getPrcArmor() {
+        return prcArmor;
+    }
+
+    public int getNbBullets() {
+        return nbBullets;
+    }
+
+    public int getNbChargors() {
+        return nbChargors;
+    }
+
+    public int getNbCash() {
+        return nbCash;
+    }
+
+    public Rectangle getHero() {
+        return hero;
+    }
+
+    public Texture getHerosImage() {
+        return herosImage;
     }
 }
