@@ -134,21 +134,26 @@ public class MultiThreadedServer {
                 try {
                     LOG.info("Reading the client data or closes the connection...");
 
+                    UserJson user = new UserJson("", "");
+                    while(! userList.exist(user)){
+                        line = in.readLine();
+                        System.out.println(line);
+                        user = moteurJson.fromJson(line, UserJson.class);
 
-                    line = in.readLine();
-                    System.out.println(line);
-                    UserJson user = moteurJson.fromJson(line, UserJson.class);
-                    if (userList.exist(user)) {
-                        out.write("connected\n");
-                        out.flush();
-                    }else {
-                        out.write("disconnected\n");
-                        out.flush();
+                        if (userList.exist(user)) {
+                            out.write("connected\n");
+                            out.flush();
+                        }else {
+                            out.write("disconnected\n");
+                            out.flush();
+                        }
                     }
+
                     LOG.info("Cleaning up resources...");
                     clientSocket.close();
                     in.close();
                     out.close();
+
 
                 } catch (IOException ex) {
                     if (in != null) {
