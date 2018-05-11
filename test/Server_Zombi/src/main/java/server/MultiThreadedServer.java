@@ -142,13 +142,11 @@ public class MultiThreadedServer {
 
                         if (userList.exist(user)) {
                             out.write("connected\n");
-                            out.flush();
                         }else {
                             out.write("disconnected\n");
-                            out.flush();
                         }
+                        out.flush();
                     }
-
 
                     LOG.info("Cleaning up resources...");
                     clientSocket.close();

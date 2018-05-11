@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -10,33 +10,19 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import java.io.IOException;
+public class StartScreen extends GenericScreen {
 
-public class StartScreen implements Screen {
-
-    private Game game;
-    private Stage stage;
 
     private TextButton start;
     private TextButton commands;
     private TextButton highScors;
 
-    SpriteBatch batch;
-    Texture img;
 
-    public StartScreen(Game game) { //prob role aussi pour admin
+    public StartScreen(final Game game) { //prob role aussi pour admin
 
-        batch = new SpriteBatch();
-        img = new Texture("core/src/resources/LoginScreen.jpg");
-
-        this.game = game;
-        stage = new Stage();
-
-        Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        super(game);
 
         //-----------Start button-----------
         start = new TextButton("Start", skin);
@@ -45,7 +31,7 @@ public class StartScreen implements Screen {
         start.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                game.setScreen(new LoadingScreen(game));
             }
         });
 
@@ -58,7 +44,7 @@ public class StartScreen implements Screen {
         commands.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                game.setScreen(new CommandsScreen(game));
             }
         });
 
@@ -71,54 +57,11 @@ public class StartScreen implements Screen {
         highScors.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                game.setScreen(new HighScoresScreen(game));
             }
         });
 
         stage.addActor(highScors);
     }
 
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        batch.begin();
-        batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.end();
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        batch.dispose();
-        img.dispose();
-    }
 }

@@ -1,6 +1,5 @@
-package com.mygdx.game;
+package ClientServer;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package ClientServer;
 
 public class Protocol {
 

@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package ClientServer;
 
 import java.util.Objects;
 

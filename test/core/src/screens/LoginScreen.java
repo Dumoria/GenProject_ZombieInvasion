@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -9,20 +9,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import ClientServer.Client;
 
 import java.io.IOException;
 
 
-public class LoginScreen implements Screen {
-
-    private Game game;
-    private Stage stage;
+public class LoginScreen extends GenericScreen {
 
     private TextButton connect;
     private TextField username;
@@ -30,8 +27,6 @@ public class LoginScreen implements Screen {
 
     private boolean logged;
 
-    SpriteBatch batch;
-    Texture img;
 
     public TextField getUsername() {
         return username;
@@ -42,15 +37,8 @@ public class LoginScreen implements Screen {
     }
 
     public LoginScreen(final Game game, final Client client) {
-        batch = new SpriteBatch();
-        img = new Texture("core/src/resources/LoginScreen.jpg");
 
-        this.game = game;
-        stage = new Stage();
-
-        Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-
+        super(game);
 
         connect = new TextButton("Connect", skin);
         connect.setPosition(300,150);
@@ -97,50 +85,6 @@ public class LoginScreen implements Screen {
         stage.addActor(password);
     }
 
-
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        batch.begin();
-		batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		batch.end();
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        batch.dispose();
-        img.dispose();
-    }
 
     public boolean isLogged() {
         return logged;
