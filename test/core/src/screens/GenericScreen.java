@@ -15,12 +15,24 @@ public abstract class GenericScreen implements Screen {
     protected Game game;
     protected Stage stage;
     protected Skin skin;
-    SpriteBatch batch;
-    Texture img;
+    protected SpriteBatch batch;
+    protected Texture img;
 
     public GenericScreen(Game game) {
         batch = new SpriteBatch();
         img = new Texture("core/src/resources/LoginScreen.jpg");
+
+        this.game = game;
+        stage = new Stage();
+
+        Gdx.input.setInputProcessor(stage);
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+    }
+
+    public GenericScreen(Game game, String pathImage) {
+        batch = new SpriteBatch();
+        img = new Texture(pathImage);
 
         this.game = game;
         stage = new Stage();
