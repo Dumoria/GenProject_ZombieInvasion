@@ -47,7 +47,7 @@ public class Client {
 
     }
 
-    public void loginUser(String username, String password) throws IOException{
+    public boolean loginUser(String username, String password) throws IOException{
         this.username = username;
         this.password = password;
 
@@ -61,9 +61,11 @@ public class Client {
         System.out.println(tmp);
         writeServer(tmp);
 
-        //read response from server
-        //logged = Integer.parseInt(readServer());
-        System.out.println(in.readLine());
+
+        if(in.readLine().equals("connected"))
+            return true;
+
+        return false;
     }
 
     public void connect(String server, int port) throws IOException {

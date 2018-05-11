@@ -149,6 +149,7 @@ public class MultiThreadedServer {
                         }
                     }
 
+
                     LOG.info("Cleaning up resources...");
                     clientSocket.close();
                     in.close();

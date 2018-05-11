@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+
 import java.io.IOException;
 
 public class Zombi_Invasion extends Game {
@@ -24,6 +25,7 @@ public class Zombi_Invasion extends Game {
 		}
 
 		this.setScreen(new LoginScreen(this, client));
+
 		//batch = new SpriteBatch();
 		//img = new Texture("core/assets/badlogic.jpg");
 	}

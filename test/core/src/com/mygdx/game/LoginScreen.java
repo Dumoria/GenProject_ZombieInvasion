@@ -28,6 +28,8 @@ public class LoginScreen implements Screen {
     private TextField username;
     private TextField password;
 
+    private boolean logged;
+
     SpriteBatch batch;
     Texture img;
 
@@ -39,7 +41,7 @@ public class LoginScreen implements Screen {
         return password;
     }
 
-    public LoginScreen(Game game, final Client client) {
+    public LoginScreen(final Game game, final Client client) {
         batch = new SpriteBatch();
         img = new Texture("core/src/resources/LoginScreen.jpg");
 
@@ -57,7 +59,11 @@ public class LoginScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 try {
-                    client.loginUser(username.getText(), password.getText());
+                    logged = client.loginUser(username.getText(), password.getText());
+                    if(logged){
+                        System.out.println("logged");
+                        game.setScreen(new StartScreen(game));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -135,4 +141,10 @@ public class LoginScreen implements Screen {
         batch.dispose();
         img.dispose();
     }
+
+    public boolean isLogged() {
+        return logged;
+    }
+
+
 }
