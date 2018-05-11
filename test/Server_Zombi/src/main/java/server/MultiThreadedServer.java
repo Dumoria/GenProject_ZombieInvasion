@@ -128,48 +128,49 @@ public class MultiThreadedServer {
             public void run() {
                 String line = "";
 
-                out.println("Welcome to the Multi-Threaded Server.Send me text lines and conclude with the BYE command.");
+                out.println("Welcome to the Multi-Threaded Server. Send me text lines and conclude with the BYE command.");
                 out.flush();
-                while(true) {
-                    try {
-                        LOG.info("Reading the client data or closes the connection...");
-                        System.out.println("1");
-                        line = in.readLine();
-                        System.out.println("2");
-                        line += in.readLine();
 
-                        System.out.println(line);
-                        UserJson user = moteurJson.fromJson(line, UserJson.class);
-                        if (userList.getUsers().contains(user))
-                            out.write("connected");
-                        else
-                            out.write("disconnected");
-                        LOG.info("Cleaning up resources...");
-                        clientSocket.close();
-                        in.close();
-                        out.close();
+                try {
+                    LOG.info("Reading the client data or closes the connection...");
 
-                    } catch (IOException ex) {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (IOException ex1) {
-                                LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
-                            }
-                        }
-                        if (out != null) {
-                            out.close();
-                        }
-                        if (clientSocket != null) {
-                            try {
-                                clientSocket.close();
-                            } catch (IOException ex1) {
-                                LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
-                            }
-                        }
-                        LOG.log(Level.SEVERE, ex.getMessage(), ex);
+
+                    line = in.readLine();
+                    System.out.println(line);
+                    UserJson user = moteurJson.fromJson(line, UserJson.class);
+                    if (userList.getUsers().contains(user)) {
+                        out.write("connected\n");
+                        out.flush();
+                    }else {
+                        out.write("disconnected\n");
+                        out.flush();
                     }
+                    LOG.info("Cleaning up resources...");
+                    clientSocket.close();
+                    in.close();
+                    out.close();
+
+                } catch (IOException ex) {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException ex1) {
+                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+                        }
+                    }
+                    if (out != null) {
+                        out.close();
+                    }
+                    if (clientSocket != null) {
+                        try {
+                            clientSocket.close();
+                        } catch (IOException ex1) {
+                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+                        }
+                    }
+                    LOG.log(Level.SEVERE, ex.getMessage(), ex);
                 }
+
             }
         }
     }

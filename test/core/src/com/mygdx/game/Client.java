@@ -11,9 +11,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-//import javafx.fxml.FXML;
-//import javafx.scene.control.TextField;
-//import javafx.fxml.FXML;
 
 public class Client {
 
@@ -24,7 +21,7 @@ public class Client {
     private PrintWriter out;
     private boolean connected;
     private Gson gson;
-    private int role;
+    private int logged;
 
     private String username;
     private String password;
@@ -32,7 +29,7 @@ public class Client {
     //---------------Constructor---------------------------------
     public Client() {
         this.connected = false;
-        role = 0;
+        logged = 0;
 
 
         //Prépare le moteur gson
@@ -62,13 +59,11 @@ public class Client {
 
         String tmp=gson.toJson(new UserJson(this.username,this.password));
         System.out.println(tmp);
-
-        out.write(tmp);
-        out.flush();
-
+        writeServer(tmp);
 
         //read response from server
-        //role = Integer.parseInt(in.readLine());
+        //logged = Integer.parseInt(readServer());
+        System.out.println(in.readLine());
     }
 
     public void connect(String server, int port) throws IOException {

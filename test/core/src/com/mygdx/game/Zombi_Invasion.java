@@ -16,13 +16,14 @@ public class Zombi_Invasion extends Game {
 	@Override
 	public void create () {
 		Client client = new Client();
-		this.setScreen(new LoginScreen(this, client));
 
 		try {
 			client.connect("localhost", 2323);
 		}catch(IOException e){
 			System.out.println("Can't reach server");
 		}
+
+		this.setScreen(new LoginScreen(this, client));
 		//batch = new SpriteBatch();
 		//img = new Texture("core/assets/badlogic.jpg");
 	}
