@@ -1,9 +1,9 @@
 {
 	"users": [{
-		"username": "Fabrice",
+		"userName": "Fabrice",
 		"mdp": "12345"
 	}, {
-		"username": "Arno",
+		"userName": "Arno",
 		"mdp": "123456"
 	}]
 }

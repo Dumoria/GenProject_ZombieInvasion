@@ -9,4 +9,12 @@ public class UserList {
     public List<UserJson> getUsers() {
         return users;
     }
+    public boolean exist(UserJson user){
+        for(UserJson u:users){
+            if(u.equals(user)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

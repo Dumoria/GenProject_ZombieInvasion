@@ -18,6 +18,9 @@ public class UserJson {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    public String toString(){
+        return userName+" "+mdp;
+    }
 
     @Override
     public boolean equals(Object o) {

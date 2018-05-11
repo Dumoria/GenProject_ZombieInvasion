@@ -138,7 +138,7 @@ public class MultiThreadedServer {
                     line = in.readLine();
                     System.out.println(line);
                     UserJson user = moteurJson.fromJson(line, UserJson.class);
-                    if (userList.getUsers().contains(user)) {
+                    if (userList.exist(user)) {
                         out.write("connected\n");
                         out.flush();
                     }else {
