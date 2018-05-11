@@ -1,3 +1,5 @@
+package com.mygdx.game;
+
 public class Protocol {
 
    public final static int DEFAULT_PORT = 2613;

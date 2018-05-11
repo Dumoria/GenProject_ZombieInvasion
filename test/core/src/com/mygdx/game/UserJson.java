@@ -1,3 +1,5 @@
+package com.mygdx.game;
+
 import java.util.Objects;
 
 public class UserJson {

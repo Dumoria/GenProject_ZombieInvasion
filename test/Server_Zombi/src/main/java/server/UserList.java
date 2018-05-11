@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserList {
-    private final List<User> users = new ArrayList<User>();
+    private final List<UserJson> users = new ArrayList<UserJson>();
 
-    public List<User> getUsers() {
+    public List<UserJson> getUsers() {
         return users;
     }
 }

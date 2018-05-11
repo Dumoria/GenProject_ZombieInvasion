@@ -7,13 +7,22 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.io.IOException;
+
 public class Zombi_Invasion extends Game {
 	//SpriteBatch batch;
 	//Texture img;
 
 	@Override
 	public void create () {
-		//this.setScreen(new LoginScreen(this));
+		Client client = new Client();
+		this.setScreen(new LoginScreen(this, client));
+
+		try {
+			client.connect("localhost", 2323);
+		}catch(IOException e){
+			System.out.println("Can't reach server");
+		}
 		//batch = new SpriteBatch();
 		//img = new Texture("core/assets/badlogic.jpg");
 	}

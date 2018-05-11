@@ -31,7 +31,7 @@ public class MultiThreadedServer {
      */
     public MultiThreadedServer(int port) {
         this.port = port;
-        chargeUserList("Player.json");
+        chargeUserList("Server_Zombi/src/main/java/server/Player.json");
     }
 
     void chargeUserList(String JsonFileName) {
@@ -90,7 +90,7 @@ public class MultiThreadedServer {
             }
 
             while (true) {
-                LOG.log(Level.INFO, "Waiting (blocking) for a new client on port {0}", port);
+                LOG.log(Level.INFO, "Waiting (blocking) for a new client on port " + port);
                 try {
                     Socket clientSocket = serverSocket.accept();
                     LOG.info("A new client has arrived. Starting a new thread and delegating work to a new servant...");
@@ -126,42 +126,49 @@ public class MultiThreadedServer {
 
             @Override
             public void run() {
-                String line;
+                String line = "";
 
-                out.println("Welcome to the Multi-Threaded Server.\nSend me text lines and conclude with the BYE command.");
+                out.println("Welcome to the Multi-Threaded Server.Send me text lines and conclude with the BYE command.");
                 out.flush();
-                try {
-                    LOG.info("Reading the client data or closes the connection...");
-                    line = in.readLine();
-                    User user = moteurJson.fromJson(line, User.class);
-                    if(userList.getUsers().contains(user))
-                        out.write("connected");
-                    else
-                        out.write("disconnected");
-                    LOG.info("Cleaning up resources...");
-                    clientSocket.close();
-                    in.close();
-                    out.close();
+                while(true) {
+                    try {
+                        LOG.info("Reading the client data or closes the connection...");
+                        System.out.println("1");
+                        line = in.readLine();
+                        System.out.println("2");
+                        line += in.readLine();
 
-                } catch (IOException ex) {
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (IOException ex1) {
-                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
-                        }
-                    }
-                    if (out != null) {
+                        System.out.println(line);
+                        UserJson user = moteurJson.fromJson(line, UserJson.class);
+                        if (userList.getUsers().contains(user))
+                            out.write("connected");
+                        else
+                            out.write("disconnected");
+                        LOG.info("Cleaning up resources...");
+                        clientSocket.close();
+                        in.close();
                         out.close();
-                    }
-                    if (clientSocket != null) {
-                        try {
-                            clientSocket.close();
-                        } catch (IOException ex1) {
-                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+
+                    } catch (IOException ex) {
+                        if (in != null) {
+                            try {
+                                in.close();
+                            } catch (IOException ex1) {
+                                LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+                            }
                         }
+                        if (out != null) {
+                            out.close();
+                        }
+                        if (clientSocket != null) {
+                            try {
+                                clientSocket.close();
+                            } catch (IOException ex1) {
+                                LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+                            }
+                        }
+                        LOG.log(Level.SEVERE, ex.getMessage(), ex);
                     }
-                    LOG.log(Level.SEVERE, ex.getMessage(), ex);
                 }
             }
         }

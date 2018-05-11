@@ -1,7 +1,8 @@
+package com.mygdx.game;
+
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mygdx.game.Zombi_Invasion;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,22 +26,17 @@ public class Client {
     private Gson gson;
     private int role;
 
-    private LoginScreen loginScreen;
-    private TextField username;
-    private TextField password;
+    private String username;
+    private String password;
 
     //---------------Constructor---------------------------------
-    public Client(LoginScreen loginScreen) {
+    public Client() {
         this.connected = false;
-        this.loginScreen = loginScreen;
-
-        this.username = loginScreen.getUsername();
-        this.password = loginScreen.getPassword();
         role = 0;
 
 
         //Prépare le moteur gson
-        gson = new GsonBuilder().setPrettyPrinting().create();
+        gson = new GsonBuilder().create();
     }
 
     //---------------Methods-------------------------------------
@@ -54,18 +50,22 @@ public class Client {
 
     }
 
-    public void loginUser() throws IOException{
-        String usernameTmp = username.getText();
-        String passwordTmp = password.getText();
+    public void loginUser(String username, String password) throws IOException{
+        this.username = username;
+        this.password = password;
 
         if(!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
-        if(usernameTmp.isEmpty() || passwordTmp.isEmpty()){
+        if(this.username.isEmpty() || this.password.isEmpty()){
             System.out.println("Error: Username and/or Password should not be empty");
         }
 
-        gson.toJson(new UserJson(usernameTmp, passwordTmp), out);
+        String tmp=gson.toJson(new UserJson(this.username,this.password));
+        System.out.println(tmp);
+
+        out.write(tmp);
         out.flush();
+
 
         //read response from server
         //role = Integer.parseInt(in.readLine());
@@ -74,7 +74,7 @@ public class Client {
     public void connect(String server, int port) throws IOException {
         socket = new Socket(server, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        in.readLine();
+        System.out.println(in.readLine());
         out = new PrintWriter(socket.getOutputStream());
         connected = true;
     }
@@ -108,14 +108,5 @@ public class Client {
         out.flush();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        LoginScreen loginScreen = new LoginScreen(new Zombi_Invasion());
-
-        System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
-
-    }
 
 }
