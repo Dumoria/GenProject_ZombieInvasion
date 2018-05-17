@@ -45,7 +45,7 @@
       </Text>
       <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="50.0" layoutY="153.0" pickOnBounds="true" preserveRatio="true" rotate="12.5">
          <image>
-            <Image url="zombi.PNG" />
+            <Image url="@zombi.PNG" />
          </image>
       </ImageView>
       <Button fx:id="buttonLogin" layoutX="450.0" layoutY="285.0" mnemonicParsing="false" onMouseClicked="#loginUser" style="-fx-background-color: #b7c3ff;" text="Login" />
