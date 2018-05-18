@@ -17,4 +17,7 @@ public class UserList {
         }
         return false;
     }
+    public void addUser(UserJson newUser){
+        users.add(newUser);
+    }
 }

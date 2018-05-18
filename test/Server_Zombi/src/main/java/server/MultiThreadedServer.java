@@ -114,6 +114,7 @@ public class MultiThreadedServer {
             Socket clientSocket;
             BufferedReader in = null;
             PrintWriter out = null;
+            private Boolean done=false;
 
             public ServantWorker(Socket clientSocket) {
                 try {
@@ -127,33 +128,52 @@ public class MultiThreadedServer {
 
             @Override
             public void run() {
-                String line = "";
+                String command = "";
 
                 out.println("Welcome to the Multi-Threaded Server. Send me text lines and conclude with the BYE command.");
                 out.flush();
 
                 try {
                     LOG.info("Reading the client data or closes the connection...");
+                    while(!done&& ((command = in.readLine()) != null)) {
+                        switch (command.toUpperCase()){
+                            case ServerProtocol.CMD_BYE:
+                                done=true;
+                                LOG.info("Cleaning up resources...");
+                                clientSocket.close();
+                                in.close();
+                                out.close();
+                                break;
+                            case ServerProtocol.CMD_CONNECT:
+                                String line;
+                                UserJson user = new UserJson("", "");
+                                while (!userList.exist(user)) {
+                                    line = in.readLine();
+                                    user = moteurJson.fromJson(line, UserJson.class);
 
-                    UserJson user = new UserJson("", "");
-                    while(! userList.exist(user)){
-                        line = in.readLine();
-                        System.out.println(line);
-                        user = moteurJson.fromJson(line, UserJson.class);
-
-                        if (userList.exist(user)) {
-                            out.write("connected\n");
-                        }else {
-                            out.write("disconnected\n");
+                                    if (userList.exist(user)) {
+                                        out.write("connected\n");
+                                    } else {
+                                        out.write("disconnected\n");
+                                    }
+                                    out.flush();
+                                }
+                                break;
+                            case ServerProtocol.CMD_CREATE:
+                                String ligne;
+                                UserJson userToAdd ;
+                                ligne=in.readLine();
+                                userToAdd= moteurJson.fromJson(ligne, UserJson.class);
+                                if(userList.exist(userToAdd)){
+                                    out.write("connected\n");
+                                }
+                                else{
+                                    userList.addUser(userToAdd);
+                                    out.write("compte créer\n");
+                                }
+                                out.flush();break;
                         }
-                        out.flush();
                     }
-
-                    LOG.info("Cleaning up resources...");
-                    clientSocket.close();
-                    in.close();
-                    out.close();
-
 
                 } catch (IOException ex) {
                     if (in != null) {

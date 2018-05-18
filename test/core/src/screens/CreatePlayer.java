@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.io.IOException;
 
 public class CreatePlayer extends GenericScreen {
-    private TextButton connect;
+    private TextButton create;
     private TextButton previous;
     private TextField username;
     private TextField password;
@@ -34,17 +34,25 @@ public class CreatePlayer extends GenericScreen {
         mdpLogin = new Label("password", skin);
         mdpLogin.setPosition(140, 205);
         stage.addActor(mdpLogin);
-        connect = new TextButton("Create", skin);
-        connect.setPosition(220, 150);
-        connect.setSize(180, 40);
-        connect.addListener(new ChangeListener() {
+        create = new TextButton("Create", skin);
+        create.setPosition(220, 150);
+        create.setSize(180, 40);
+        create.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                try {
+                   boolean logged = client.createUser(username.getText(), password.getText());
+                    if(logged){
+                        System.out.println("logged");
+                        game.setScreen(new StartScreen(game));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-        stage.addActor(connect);
+        stage.addActor(create);
 
         username = new TextField("Username", skin);
         username.setPosition(220, 250);
