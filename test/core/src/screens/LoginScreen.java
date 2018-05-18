@@ -24,6 +24,7 @@ public class LoginScreen extends GenericScreen {
     private TextButton connect;
     private TextField username;
     private TextField password;
+    private TextButton newUser;
 
     private boolean logged;
 
@@ -83,6 +84,21 @@ public class LoginScreen extends GenericScreen {
         password.setPosition(300,200);
         password.setSize(300, 40);
         stage.addActor(password);
+
+        // --------------------------------------
+
+        newUser = new TextButton("New User", skin);
+        newUser.setPosition(50,20);
+        newUser.setSize(90, 30);
+        newUser.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //save the command in a new file (commandsNew)
+                game.setScreen(new CreatePlayer(game, client));
+            }
+        });
+
+        stage.addActor(newUser);
     }
 
 
