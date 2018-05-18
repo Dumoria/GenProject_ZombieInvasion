@@ -9,25 +9,22 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import ClientServer.Client;
-import javafx.scene.text.Font;
 
-import javax.swing.*;
 import java.io.IOException;
 
 
 public class LoginScreen extends GenericScreen {
 
     private TextButton connect;
-    private TextButton createPlayer;
     private TextField username;
     private TextField password;
-    private Label titre;
-    private Label userNameLogin;
-    private Label mdpLogin;
+    private TextButton newUser;
 
     private boolean logged;
 
@@ -41,28 +38,18 @@ public class LoginScreen extends GenericScreen {
     }
 
     public LoginScreen(final Game game, final Client client) {
+
         super(game);
-        titre = new Label("Zombie Invasion", skin);
-        titre.setPosition(200, 380);
-        titre.setFontScale(2);
-        stage.addActor(titre);
 
-        userNameLogin = new Label("userName", skin);
-        userNameLogin.setPosition(40, 255);
-        stage.addActor(userNameLogin);
-
-        mdpLogin = new Label("password", skin);
-        mdpLogin.setPosition(40, 205);
-        stage.addActor(mdpLogin);
         connect = new TextButton("Connect", skin);
-        connect.setPosition(120, 150);
-        connect.setSize(120, 40);
+        connect.setPosition(300,150);
+        connect.setSize(300, 40);
         connect.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 try {
                     logged = client.loginUser(username.getText(), password.getText());
-                    if (logged) {
+                    if(logged){
                         System.out.println("logged");
                         game.setScreen(new StartScreen(game));
                     }
@@ -73,21 +60,10 @@ public class LoginScreen extends GenericScreen {
         });
 
         stage.addActor(connect);
-        createPlayer = new TextButton("create player", skin);
-        createPlayer.setPosition(370, 200);
-        createPlayer.setSize(170, 70);
-        createPlayer.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
 
-                game.setScreen(new CreatePlayer(game));
-            }
-        });
-
-        stage.addActor(createPlayer);
         username = new TextField("Username", skin);
-        username.setPosition(120, 250);
-        username.setSize(120, 40);
+        username.setPosition(300,250);
+        username.setSize(300, 40);
         username.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -105,9 +81,24 @@ public class LoginScreen extends GenericScreen {
                 password.setText("");
             }
         });
-        password.setPosition(120, 200);
-        password.setSize(120, 40);
+        password.setPosition(300,200);
+        password.setSize(300, 40);
         stage.addActor(password);
+
+        // --------------------------------------
+
+        newUser = new TextButton("New User", skin);
+        newUser.setPosition(50,20);
+        newUser.setSize(90, 30);
+        newUser.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //save the command in a new file (commandsNew)
+                game.setScreen(new CreatePlayer(game));
+            }
+        });
+
+        stage.addActor(newUser);
     }
 
 

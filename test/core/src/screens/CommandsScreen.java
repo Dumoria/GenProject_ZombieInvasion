@@ -2,9 +2,11 @@ package screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class CommandsScreen extends GenericScreen {
 
@@ -15,6 +17,8 @@ public class CommandsScreen extends GenericScreen {
     private TextButton backward;
     private TextButton left;
     private TextButton right;
+    private TextButton listCommand;
+    private TextButton editCommand;
     private char forwardChar;
     private char backwardChar;
     private char leftChar;
@@ -55,9 +59,14 @@ public class CommandsScreen extends GenericScreen {
     public CommandsScreen(final Game game) {
         super(game);
 
+        //----------- Command List-----------
+        listCommand = new TextButton(" Commands ", skin);
+        listCommand.setPosition(65,300);
+        listCommand.setSize(140, 25);
+        stage.addActor(listCommand);
         //-----------left button-----------
         left = new TextButton("left", skin);
-        left.setPosition(65,200);
+        left.setPosition(65,150);
         left.setSize(90, 30);
         left.addListener(new ChangeListener() {
             @Override
@@ -70,7 +79,7 @@ public class CommandsScreen extends GenericScreen {
 
         //-----------right button-----------
         right = new TextButton("right", skin);
-        right.setPosition(200,200);
+        right.setPosition(65,183);
         right.setSize(90, 30);
         right.addListener(new ChangeListener() {
             @Override
@@ -83,7 +92,7 @@ public class CommandsScreen extends GenericScreen {
 
         //-----------forward button-----------
         forward = new TextButton("forward", skin);
-        forward.setPosition(132,250);
+        forward.setPosition(65,215);
         forward.setSize(90, 30);
         forward.addListener(new ChangeListener() {
             @Override
@@ -96,19 +105,36 @@ public class CommandsScreen extends GenericScreen {
 
         //-----------backward button-----------
         backward = new TextButton("backward", skin);
-        backward.setPosition(132,150);
+        backward.setPosition(65,245);
         backward.setSize(90, 30);
         backward.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor)
+            {
                 //
             }
         });
         backward.getText();
         stage.addActor(backward);
 
+        //----------- Edit Command -----------
+        editCommand = new TextButton(" Edit Commands ", skin);
+        editCommand.setPosition(50,50);
+        editCommand.setSize(130, 32);
+        editCommand.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new CommandsScreen(game)
+                {
+
+
+                });
+            }
+        });
+        stage.addActor(editCommand);
+
         //-----------save button-----------
-        save = new TextButton("Quit", skin);
+        save = new TextButton("Save", skin);
         save.setPosition(50,20);
         save.setSize(90, 30);
         save.addListener(new ChangeListener() {
@@ -121,13 +147,14 @@ public class CommandsScreen extends GenericScreen {
         stage.addActor(save);
 
         //-----------Save button-----------
-        quit = new TextButton("Save", skin);
+        quit = new TextButton("Quit", skin);
         quit.setPosition(500,60);
         quit.setSize(90, 30);
         quit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //save the command in a new file (commandsNew)
+                game.setScreen(new StartScreen(game));
             }
         });
 
@@ -150,10 +177,15 @@ public class CommandsScreen extends GenericScreen {
 
 
     }
-
-    public void showCommands(final Game game)
+    public void editCommand()
     {
-
+        left.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                left.setText("");
+                //setForwardChar( left.getText());
+            }
+        });
 
     }
 
@@ -163,5 +195,6 @@ public class CommandsScreen extends GenericScreen {
         setLeftChar('a');
         setRightChar('d');
     }
+
 
 }
