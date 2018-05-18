@@ -1,5 +1,6 @@
 package screens;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,12 +14,13 @@ import java.io.IOException;
 
 public class CreatePlayer extends GenericScreen {
     private TextButton connect;
+    private TextButton previous;
     private TextField username;
     private TextField password;
     private Label titre;
     private Label userNameLogin;
     private Label mdpLogin;
-    public CreatePlayer(Game game) {
+    public CreatePlayer(final Game game, final Client client) {
         super(game);
         titre = new Label("Zombie Invasion", skin);
         titre.setPosition(200, 380);
@@ -67,5 +69,19 @@ public class CreatePlayer extends GenericScreen {
         password.setPosition(220, 200);
         password.setSize(180, 40);
         stage.addActor(password);
+
+        //-----------Save button-----------
+        previous = new TextButton("previous", skin);
+        previous.setPosition(500,60);
+        previous.setSize(90, 30);
+        previous.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //save the command in a new file (commandsNew)
+                game.setScreen(new LoginScreen(game,client));
+            }
+        });
+
+        stage.addActor(previous);
     }
 }

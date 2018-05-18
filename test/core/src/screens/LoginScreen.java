@@ -94,7 +94,7 @@ public class LoginScreen extends GenericScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //save the command in a new file (commandsNew)
-                game.setScreen(new CreatePlayer(game));
+                game.setScreen(new CreatePlayer(game, client));
             }
         });
 

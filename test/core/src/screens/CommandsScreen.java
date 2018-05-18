@@ -17,91 +17,99 @@ public class CommandsScreen extends GenericScreen {
     private TextButton backward;
     private TextButton left;
     private TextButton right;
+
+    private TextButton editforward;
+    private TextButton editbackward;
+    private TextField editleft;
+    private TextButton editright;
+
     private TextButton listCommand;
     private TextButton editCommand;
-    private char forwardChar;
-    private char backwardChar;
-    private char leftChar;
-    private char rightChar;
+    private String forwardChar;
+    private String backwardChar;
+    private String leftChar;
+    private String rightChar;
 
-    public char getForwardChar() {
+
+    public String getForwardChar() {
         return forwardChar;
     }
 
-    public char getBackwardChar() {
+    public String getBackwardChar() {
         return backwardChar;
     }
 
-    public char getLeftChar() {
+    public String getLeftChar() {
         return leftChar;
     }
 
-    public char getRightChar() {
+    public String getRightChar() {
         return rightChar;
     }
 
-    public void setForwardChar(char forwardChar) {
+    public void setForwardChar(String forwardChar) {
         this.forwardChar = forwardChar;
     }
 
-    public void setBackwardChar(char backwardChar) {
+    public void setBackwardChar(String backwardChar) {
         this.backwardChar = backwardChar;
     }
 
-    public void setLeftChar(char leftChar) {
+    public void setLeftChar(String leftChar) {
         this.leftChar = leftChar;
     }
 
-    public void setRightChar(char rightChar) {
+    public void setRightChar(String rightChar) {
         this.rightChar = rightChar;
     }
 
     public CommandsScreen(final Game game) {
         super(game);
 
+        init();
         //----------- Command List-----------
         listCommand = new TextButton(" Commands ", skin);
         listCommand.setPosition(65,300);
-        listCommand.setSize(140, 25);
+        listCommand.setSize(150, 25);
         stage.addActor(listCommand);
+
         //-----------left button-----------
+
         left = new TextButton("left", skin);
         left.setPosition(65,150);
         left.setSize(90, 30);
-        left.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //
-            }
-        });
-        left.getText();
         stage.addActor(left);
 
+        editleft = new TextField(getLeftChar(), skin);
+        editleft.setPosition(160,150);
+        editleft.setSize(60, 30);
+        stage.addActor(editleft);
+
         //-----------right button-----------
+
         right = new TextButton("right", skin);
         right.setPosition(65,183);
         right.setSize(90, 30);
-        right.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //
-            }
-        });
         right.getText();
         stage.addActor(right);
+
+        editright = new TextButton(getLeftChar(), skin);
+        editright.setPosition(160,183);
+        editright.setSize(60, 30);
+        stage.addActor(editright);
+
 
         //-----------forward button-----------
         forward = new TextButton("forward", skin);
         forward.setPosition(65,215);
         forward.setSize(90, 30);
-        forward.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //
-            }
-        });
         forward.getText();
         stage.addActor(forward);
+
+        editforward = new TextButton( forwardChar, skin);
+        editforward.setPosition(160,215);
+        editforward.setSize(60, 30);
+        stage.addActor(editforward);
 
         //-----------backward button-----------
         backward = new TextButton("backward", skin);
@@ -117,6 +125,14 @@ public class CommandsScreen extends GenericScreen {
         backward.getText();
         stage.addActor(backward);
 
+        //-----------forward edit button-----------
+        editbackward = new TextButton(backwardChar.toString(), skin);
+        editbackward.setPosition(160,245);
+        editbackward.setSize(60, 30);
+
+
+        stage.addActor(editbackward);
+
         //----------- Edit Command -----------
         editCommand = new TextButton(" Edit Commands ", skin);
         editCommand.setPosition(50,50);
@@ -124,11 +140,8 @@ public class CommandsScreen extends GenericScreen {
         editCommand.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new CommandsScreen(game)
-                {
-
-
-                });
+                game.setScreen(new EditCommands(game)
+                {});
             }
         });
         stage.addActor(editCommand);
@@ -190,10 +203,10 @@ public class CommandsScreen extends GenericScreen {
     }
 
     public void init(){
-        setForwardChar('w');
-        setBackwardChar('s');
-        setLeftChar('a');
-        setRightChar('d');
+        setForwardChar("w");
+        setBackwardChar("s");
+        setLeftChar("a");
+        setRightChar("d");
     }
 
 
