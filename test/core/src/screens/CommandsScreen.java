@@ -18,10 +18,10 @@ public class CommandsScreen extends GenericScreen {
     private TextButton left;
     private TextButton right;
 
-    private TextButton editforward;
-    private TextButton editbackward;
+    private TextField editforward;
+    private TextField editbackward;
     private TextField editleft;
-    private TextButton editright;
+    private TextField editright;
 
     private TextButton listCommand;
     private TextButton editCommand;
@@ -93,7 +93,7 @@ public class CommandsScreen extends GenericScreen {
         right.getText();
         stage.addActor(right);
 
-        editright = new TextButton(getLeftChar(), skin);
+        editright = new TextField(getLeftChar(), skin);
         editright.setPosition(160,183);
         editright.setSize(60, 30);
         stage.addActor(editright);
@@ -106,7 +106,7 @@ public class CommandsScreen extends GenericScreen {
         forward.getText();
         stage.addActor(forward);
 
-        editforward = new TextButton( forwardChar, skin);
+        editforward = new TextField( forwardChar, skin);
         editforward.setPosition(160,215);
         editforward.setSize(60, 30);
         stage.addActor(editforward);
@@ -126,7 +126,7 @@ public class CommandsScreen extends GenericScreen {
         stage.addActor(backward);
 
         //-----------forward edit button-----------
-        editbackward = new TextButton(backwardChar.toString(), skin);
+        editbackward = new TextField(backwardChar.toString(), skin);
         editbackward.setPosition(160,245);
         editbackward.setSize(60, 30);
 
