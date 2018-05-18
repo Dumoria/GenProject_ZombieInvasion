@@ -38,8 +38,30 @@ public class Client {
     //---------------Methods-------------------------------------
 
 
-    public void createUser(){
+    public boolean createUser(String username, String password)throws  IOException{
 
+        this.username = username;
+        this.password = password;
+        if(!connected)
+            connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
+        if(this.username.isEmpty() || this.password.isEmpty()){
+            System.out.println("Error: Username and/or Password should not be empty");
+            return false;
+        }
+
+        String tmp=gson.toJson(new UserJson(this.username,this.password));
+        System.out.println(tmp);
+
+        writeServer("create");
+        writeServer(tmp);
+
+        String response=in.readLine();
+        System.out.println(response);
+
+        if(response.equals("connected")||response.equals("compte créer"))
+            return true;
+
+        return false;
     }
 
     public void consultStats(){
@@ -58,10 +80,12 @@ public class Client {
 
         String tmp=gson.toJson(new UserJson(this.username,this.password));
         System.out.println(tmp);
+        writeServer("connect");
         writeServer(tmp);
 
-
-        if(in.readLine().equals("connected"))
+            String response=in.readLine();
+            System.out.println(response);
+        if(response.equals("connected"))
             return true;
 
         return false;
