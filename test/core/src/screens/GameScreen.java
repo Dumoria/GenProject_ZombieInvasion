@@ -18,8 +18,7 @@ public class GameScreen extends GenericScreen {
 
     public GameScreen(Game game) {
         super(game,"core/src/resources/grass.jpg");
-
-
+        hero = new Hero();
     }
 
 }

@@ -1,19 +1,27 @@
-package ClientServer;
+package ClientServer.Client;
 
+import ClientServer.Json.BonusJson;
+import ClientServer.Json.ClientJson;
+import ClientServer.Json.JoueurJson;
+import ClientServer.Json.UserJson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import game.Hero;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 
 public class Client {
 
-    //----------------Server connection member-------------------
+    //----------------Server connection members-------------------
     private static final Logger LOG = Logger.getLogger(Client.class.getName());
     private Socket socket;
     private BufferedReader in;
@@ -25,14 +33,25 @@ public class Client {
     private String username;
     private String password;
 
+    private Timer timer;
+    private int id;
+
+    //----------------Data game members-------------------
+    private Hero hero;
+    private LinkedList<ClientJson> teamMate;
+    private LinkedList<BonusJson> bonuses;
+
     //---------------Constructor---------------------------------
-    public Client() {
+    public Client(int id) {
         this.connected = false;
         logged = 0;
 
-
         //Prépare le moteur gson
         gson = new GsonBuilder().create();
+
+        this.id = id;
+        this.hero = new Hero(id);
+        this.timer = new Timer();
     }
 
     //---------------Methods-------------------------------------
@@ -126,6 +145,31 @@ public class Client {
     public void writeServer(String str){
         out.write(str + '\n');
         out.flush();
+    }
+
+    //juste faire des envois automatisé lors d'action du joueur
+    public void startGame(){
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    manageTraffic();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 300);
+    }
+
+
+    public void manageTraffic() throws IOException{
+
+        //manage input
+
+        //prob du genre gameScreen.displayImage()
+
+        //Send coord
+        gson.toJson(new JoueurJson(id, hero.getCoord()));
     }
 
 

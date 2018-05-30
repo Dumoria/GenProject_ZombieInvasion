@@ -1,12 +1,23 @@
 package server;
 
+import ClientServer.Client.Client;
+import ClientServer.Json.BonusJson;
+import ClientServer.Json.ClientJson;
+import ClientServer.Json.EnnemyJson;
+import ClientServer.Json.JoueurJson;
+import Json.UserJson;
+import Json.UserList;
 import com.google.gson.*;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import game.Ennemy;
 
 
 /**
@@ -18,12 +29,14 @@ import java.util.logging.Logger;
  */
 public class MultiThreadedServer {
 
-    final static Logger LOG = Logger.getLogger(MultiThreadedServer.class.getName());
-    static UserList userList;
+    private final static Logger LOG = Logger.getLogger(MultiThreadedServer.class.getName());
+    private Gson moteurJson = new Gson();
+    private int port;
 
-    Gson moteurJson = new Gson();
-
-    int port;
+    private static UserList userList;
+    private LinkedList<ReceptionistWorker.ServantWorker> clients;
+    private LinkedList<Ennemy> ennemis;
+    private Timer timer;
 
     /**
      * Constructor
@@ -33,6 +46,9 @@ public class MultiThreadedServer {
     public MultiThreadedServer(int port) {
         this.port = port;
         chargeUserList("Server_Zombi/src/main/java/server/Player.json");
+        clients = new LinkedList<>();
+        ennemis = new LinkedList<>();
+        timer = new Timer();
     }
 
     void chargeUserList(String JsonFileName) {
@@ -58,6 +74,144 @@ public class MultiThreadedServer {
 
         return lignes;
     }
+            /*
+            récup string, lire premier champ avec id, puis déserialiser en fonction
+                ------Paquet de transit------
+                Paquet hero:
+                    -position
+                    -id
+
+                Paquet mort:
+                    -id joueur/zombi
+                    -position pour ev animation
+
+                Paquet bonus: (signal prise bonus)
+                    -id bonus
+                    -bool apparuDiparu
+
+
+                --------Calcul serveur--------
+                Paquet tire: (signal zombi touché)
+                    -id zombi
+
+                Paquet zombis:
+                    -Contient l'ensemble des zombi position
+
+
+            Calcule sur serveur:
+                Buffer de requête. Toutes les dix requêtes, va vider
+                le buffer.
+
+                Trois tirs sur un zombi le tue
+             */
+
+        /*
+        Une fonction qui envoie aux autres joueurs
+        Une fonction qui lit d'un joueur
+        Une fonction/debut de la princi qui gere le type de jsonString (voir protocol pour id puis type, ev type dans id)
+
+        les idees sont gere par le serveur, lui seul en a besoin niveau client
+         */
+    public void startGame(){
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    manageTraffic();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 300);
+    }
+
+    public ClientJson parseResponse(String str){ //verif
+
+        switch (getClass(str)){
+            case 1:
+                return moteurJson.fromJson(str, JoueurJson.class);
+            case 2:
+                return moteurJson.fromJson(str, EnnemyJson.class);
+            case 3:
+                return moteurJson.fromJson(str, BonusJson.class);
+            default:
+                break;
+        }
+        return null;
+    }
+
+    public int getClass(String str){
+        int count = 3;                                  //verif
+        while(Character.isDigit(str.charAt(count++)));
+        return str.charAt(--count);
+    }
+
+    public void manageTraffic() throws IOException{
+
+        //Deal with the output from each client
+        for(ReceptionistWorker.ServantWorker worker : clients){
+
+            //Read output
+            String clientData = worker.readServer();
+            ClientJson clientJson = parseResponse(clientData);
+            int id = clientJson.getIdClient();
+
+            //Take the adequate measure
+            switch (clientJson.getIdClient() % 10){
+
+                //Hero class => move (transit information) or death
+                case 1:
+                    sendDataToOtherClients(id, clientData);
+                    break;
+
+                //Enemy class => shot or appears
+                case 2:
+                    break;
+
+                //Bonus class => appears or disapears
+                case 3:
+                    sendDataToOtherClients(id, clientData);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        //Zombis position update
+        for(Ennemy ennemy : ennemis){
+            ennemy.updatePosition();
+        }
+
+        //Send new zombis position
+        broadcast(moteurJson.toJson(ennemis));
+    }
+
+    public void sendDataToOtherClients(int id, String data){
+        int count = 0;
+        for(ReceptionistWorker.ServantWorker worker : clients){
+            if(count++ != id)
+            worker.writeServer(data);
+        }
+    }
+
+    public void broadcast(String data){
+        for(ReceptionistWorker.ServantWorker worker : clients){
+            worker.writeServer(data);
+        }
+    }
+
+    public void handleShots(int idZombi){
+        for(Ennemy ennemy : ennemis){
+            if(idZombi == ennemy.getId()) {
+
+                //Shoot zombi and check if dead
+                if(ennemy.getShot() == 3)
+                    ennemis.remove(ennemy); //Eventuellement transmettre alors deathNotification
+                return;
+            }
+        }
+    }
 
     /**
      * This method initiates the process. The server creates a socket and binds it
@@ -79,10 +233,10 @@ public class MultiThreadedServer {
      */
     private class ReceptionistWorker implements Runnable {
 
+        ServerSocket serverSocket;
+
         @Override
         public void run() {
-            ServerSocket serverSocket;
-
             try {
                 serverSocket = new ServerSocket(port);
             } catch (IOException ex) {
@@ -95,7 +249,11 @@ public class MultiThreadedServer {
                 try {
                     Socket clientSocket = serverSocket.accept();
                     LOG.info("A new client has arrived. Starting a new thread and delegating work to a new servant...");
-                    new Thread(new ServantWorker(clientSocket)).start();
+
+                    ServantWorker servantWorker = new ServantWorker(clientSocket);
+                    clients.add(servantWorker);      //Add client to the clients list
+
+                    new Thread(servantWorker).start();
                 } catch (IOException ex) {
                     Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -124,6 +282,15 @@ public class MultiThreadedServer {
                 } catch (IOException ex) {
                     Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+
+            public String readServer() throws IOException{
+                return in.readLine();
+            }
+
+            public void writeServer(String data){
+                out.write(data);
+                out.flush();
             }
 
             @Override

@@ -1,4 +1,4 @@
-package ClientServer;
+package ClientServer.Client;
 
 public class Protocol {
 
