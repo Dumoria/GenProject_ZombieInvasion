@@ -1,19 +1,24 @@
 package ClientServer;
 
+import ClientServer.Json.BonusJson;
+import ClientServer.Json.ClientJson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import game.Hero;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Timer;
 import java.util.logging.Logger;
 
 
 public class Client {
 
-    //----------------Server connection member-------------------
+    //----------------Server connection members-------------------
     private static final Logger LOG = Logger.getLogger(Client.class.getName());
     private Socket socket;
     private BufferedReader in;
@@ -24,6 +29,15 @@ public class Client {
 
     private String username;
     private String password;
+
+    private Timer timer;
+    private int id;
+
+    //----------------Data game members-------------------
+    private Hero hero;
+    private LinkedList<ClientJson> teamMate;
+    private LinkedList<BonusJson> bonuses;
+
 
     //---------------Constructor---------------------------------
     public Client() {
