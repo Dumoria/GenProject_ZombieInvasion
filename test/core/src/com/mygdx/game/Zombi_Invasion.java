@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import ClientServer.Client.Client;
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import screens.LoginScreen;
@@ -15,7 +15,7 @@ public class Zombi_Invasion extends Game {
 	@Override
 	public void create () {
 		batch=new SpriteBatch();
-		Client client = new Client(1);
+		Client client = new Client();
 
 		try {
 			client.connect("localhost", 2323);

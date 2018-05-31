@@ -1,4 +1,4 @@
-package Json;
+package server;
 
 import java.util.Objects;
 
@@ -6,7 +6,7 @@ public class UserJson {
 
     private String userName=null;
     private String mdp=null;
-    public UserJson(String userName, String motDePasse){
+    UserJson(String userName, String motDePasse){
         this.userName=userName;
         mdp=motDePasse;
     }

@@ -4,23 +4,23 @@ import Util.Coord;
 
 public class EnnemyJson extends ClientJson{
 
-    private int id;
+    private int idEnnemy;
     private int nbShots;
     private Coord coord;
 
-    public EnnemyJson(int idClient, int id, int nbShots, Coord coord) {
+    public EnnemyJson(int idClient, int idEnnemy, int nbShots, Coord coord) {
         super(idClient);
-        this.id = id;
+        this.idEnnemy = idEnnemy;
         this.nbShots = nbShots;
         this.coord = coord;
     }
 
-    public int getId() {
-        return id;
+    public int getIdEnnemy() {
+        return idEnnemy;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdEnnemy(int idEnnemy) {
+        this.idEnnemy = idEnnemy;
     }
 
     public int getNbShots() {

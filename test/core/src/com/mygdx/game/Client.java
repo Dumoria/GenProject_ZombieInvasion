@@ -1,4 +1,4 @@
-package ClientServer.Client;
+package com.mygdx.game;
 
 import ClientServer.Json.BonusJson;
 import ClientServer.Json.ClientJson;
@@ -34,7 +34,7 @@ public class Client {
     private String password;
 
     private Timer timer;
-    private int id;
+    private int idClient;
 
     //----------------Data game members-------------------
     private Hero hero;
@@ -42,20 +42,17 @@ public class Client {
     private LinkedList<BonusJson> bonuses;
 
     //---------------Constructor---------------------------------
-    public Client(int id) {
+    public Client() {
         this.connected = false;
         logged = 0;
 
         //Prépare le moteur gson
         gson = new GsonBuilder().create();
-
-        this.id = id;
-        this.hero = new Hero(id);
+        this.hero = new Hero(0);
         this.timer = new Timer();
     }
 
     //---------------Methods-------------------------------------
-
 
     public boolean createUser(String username, String password)throws  IOException{
 
@@ -113,7 +110,11 @@ public class Client {
     public void connect(String server, int port) throws IOException {
         socket = new Socket(server, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
         System.out.println(in.readLine());
+        idClient = Integer.parseInt(in.readLine());
+        //hero.setIxdFromClient(idClient);
+
         out = new PrintWriter(socket.getOutputStream());
         connected = true;
     }
@@ -169,7 +170,7 @@ public class Client {
         //prob du genre gameScreen.displayImage()
 
         //Send coord
-        gson.toJson(new JoueurJson(id, hero.getCoord()));
+        //gson.toJson(new JoueurJson(idClient, hero.getCoord()));
     }
 
 
