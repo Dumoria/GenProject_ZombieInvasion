@@ -48,7 +48,7 @@ public class Client {
 
         //Prépare le moteur gson
         gson = new GsonBuilder().create();
-        this.hero = new Hero();
+        this.hero = new Hero(0);
         this.timer = new Timer();
     }
 

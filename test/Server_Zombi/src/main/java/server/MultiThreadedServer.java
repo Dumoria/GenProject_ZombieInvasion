@@ -18,6 +18,10 @@ import java.util.logging.Logger;
  */
 public class MultiThreadedServer {
 
+    /*
+    Create interface for bonus, etc..
+     */
+
     final static Logger LOG = Logger.getLogger(MultiThreadedServer.class.getName());
     static UserList userList;
 

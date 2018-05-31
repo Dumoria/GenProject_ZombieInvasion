@@ -1,37 +1,53 @@
 package game;
 
+import Util.Coord;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Hero {
 
-    private int x;
-    private int y;
+    private static final int FULL_CHARGOR = 15;
+
+    private int id;
+    private Coord coord;
     private int prcHealth;
     private int prcArmor;
     private int nbBullets;
     private int nbChargors;
     private int nbCash;
 
-    private final int FULL_CHARGOR = 15;
-
-
-    private Rectangle hero; //check if circle
+    private Rectangle hero;
     private Texture herosImage;
 
+    public Hero(int id) {
 
-    public Hero() {
-        herosImage = new Texture("LogicScreen.jpg");
+        this.id = (id * 10) + 1;
+        herosImage = new Texture("core/src/resources/mercenary1_0.png");
 
-        x = 0;
-        y = 0;
+        coord = new Coord();
         prcHealth = 100;
         prcArmor = 0;
         nbBullets = FULL_CHARGOR;
         nbChargors = 1;
         nbCash = 0;
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Coord getCoord() {
+        return coord;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setCoord(Coord coord) {
+        this.coord = coord;
     }
 
     public void shoot(){
@@ -46,38 +62,6 @@ public class Hero {
             --nbChargors;
         }
 
-    }
-
-    public void goUp(){
-        ++y;
-    }
-
-    public void goDown(){
-        --y;
-    }
-
-    public void goLeft(){
-        ++x;
-    }
-
-    public void goRight(){
-        --x;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public int getPrcHealth() {
