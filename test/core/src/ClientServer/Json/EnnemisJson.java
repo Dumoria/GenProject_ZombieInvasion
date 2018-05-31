@@ -3,6 +3,8 @@ package ClientServer.Json;
 import java.util.LinkedList;
 
 public class EnnemisJson {
+
+    //VOIR pour type paquet
     private LinkedList<EnnemyJson> ennemies; //Verif pour double deserialisation si meilleure idée
 
     public EnnemisJson(LinkedList<EnnemyJson> ennemies) {

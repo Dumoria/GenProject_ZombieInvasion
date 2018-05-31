@@ -7,7 +7,7 @@ public class JoueurJson extends ClientJson {
     private Coord coord;
 
     public JoueurJson(int idClient, Coord coord) {
-        super(idClient);
+        super(idClient, TypePaquet.HERO);
         this.coord = coord;
     }
 

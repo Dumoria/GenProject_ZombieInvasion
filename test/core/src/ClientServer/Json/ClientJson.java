@@ -10,6 +10,11 @@ public class ClientJson {
     private int idClient;
     private TypePaquet typePaquet;
 
+    public ClientJson(int idClient){
+        this.idClient = idClient;
+        this.typePaquet = TypePaquet.CLIENT;
+    }
+
     public ClientJson(int idClient, TypePaquet typePaquet) {
         this.idClient = idClient;
         this.typePaquet = typePaquet;

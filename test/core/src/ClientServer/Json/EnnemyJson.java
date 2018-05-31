@@ -9,7 +9,7 @@ public class EnnemyJson extends ClientJson{
     private Coord coord;
 
     public EnnemyJson(int idClient, int idEnnemy, int nbShots, Coord coord) {
-        super(idClient);
+        super(idClient, TypePaquet.ENNEMY);
         this.idEnnemy = idEnnemy;
         this.nbShots = nbShots;
         this.coord = coord;
@@ -37,5 +37,14 @@ public class EnnemyJson extends ClientJson{
 
     public void setCoord(Coord coord) {
         this.coord = coord;
+    }
+
+    @Override
+    public String toString() {
+        return "EnnemyJson{" +
+                "idEnnemy=" + idEnnemy +
+                ", nbShots=" + nbShots +
+                ", coord=" + coord +
+                '}';
     }
 }

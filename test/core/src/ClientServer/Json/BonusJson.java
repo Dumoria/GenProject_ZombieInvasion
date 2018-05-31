@@ -7,8 +7,8 @@ public class BonusJson extends ClientJson{
     private int idBonus;
     private Coord coord;
 
-    public BonusJson(int idClient, TypePaquet typePaquet, int idBonus, Coord coord) {
-        super(idClient, typePaquet);
+    public BonusJson(int idClient, int idBonus, Coord coord) {
+        super(idClient, TypePaquet.BONUS);
         this.idBonus = idBonus;
         this.coord = coord;
     }
