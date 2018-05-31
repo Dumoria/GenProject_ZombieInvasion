@@ -55,6 +55,22 @@ public class Client {
     //---------------Methods-------------------------------------
 
 
+    public LinkedList<ClientJson> getTeamMate() {
+        return teamMate;
+    }
+
+    public void setTeamMate(LinkedList<ClientJson> teamMate) {
+        this.teamMate = teamMate;
+    }
+
+    public LinkedList<BonusJson> getBonuses() {
+        return bonuses;
+    }
+
+    public void setBonuses(LinkedList<BonusJson> bonuses) {
+        this.bonuses = bonuses;
+    }
+
     public boolean createUser(String username, String password)throws  IOException{
 
         this.username = username;
@@ -150,6 +166,7 @@ public class Client {
         out.flush();
     }
 
+
     //juste faire des envois automatisé lors d'action du joueur
     public void startGame(){
         timer.schedule(new TimerTask() {
@@ -165,13 +182,8 @@ public class Client {
     }
 
 
+
     public void manageTraffic() throws IOException{
-
-        //manage input
-
-        //prob du genre gameScreen.displayImage()
-
-        //Send coord
         gson.toJson(new JoueurJson(idClient, hero.getCoord()));
     }
 

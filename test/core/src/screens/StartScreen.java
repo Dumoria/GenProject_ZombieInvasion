@@ -1,5 +1,6 @@
 package screens;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -20,9 +21,9 @@ public class StartScreen extends GenericScreen {
     private TextButton highScors;
 
 
-    public StartScreen(final Game game) { //prob role aussi pour admin
+    public StartScreen(final Game game, final Client client) { //prob role aussi pour admin
 
-        super(game);
+        super(game, client);
 
         //-----------Start button-----------
         start = new TextButton("Start", skin);
@@ -31,7 +32,7 @@ public class StartScreen extends GenericScreen {
         start.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, client));
             }
         });
 
@@ -44,7 +45,7 @@ public class StartScreen extends GenericScreen {
         commands.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new CommandsScreen(game));
+                game.setScreen(new CommandsScreen(game, client));
             }
         });
 
@@ -57,7 +58,7 @@ public class StartScreen extends GenericScreen {
         highScors.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new HighScoresScreen(game));
+                game.setScreen(new HighScoresScreen(game, client));
             }
         });
 

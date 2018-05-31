@@ -1,5 +1,6 @@
 package screens;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -17,8 +18,10 @@ public abstract class GenericScreen implements Screen {
     protected Skin skin;
     protected SpriteBatch batch;
     protected Texture img;
+    protected Client client;
 
-    public GenericScreen(Game game) {
+    public GenericScreen(Game game, Client client) {
+        this.client = client;
         batch = new SpriteBatch();
         img = new Texture("core/src/resources/LoginScreen.jpg");
 

@@ -21,7 +21,7 @@ public class CreatePlayer extends GenericScreen {
     private Label userNameLogin;
     private Label mdpLogin;
     public CreatePlayer(final Game game, final Client client) {
-        super(game);
+        super(game, client);
         titre = new Label("Zombie Invasion", skin);
         titre.setPosition(200, 380);
         titre.setFontScale(2);
@@ -44,7 +44,7 @@ public class CreatePlayer extends GenericScreen {
                    boolean logged = client.createUser(username.getText(), password.getText());
                     if(logged){
                         System.out.println("logged");
-                        game.setScreen(new StartScreen(game));
+                        game.setScreen(new StartScreen(game, client));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

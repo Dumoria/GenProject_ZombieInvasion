@@ -1,5 +1,6 @@
 package screens;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,8 +13,8 @@ public class EditCommands extends CommandsScreen
 {
 
 
-    public EditCommands(final Game game) {
-        super(game);
+    public EditCommands(final Game game, Client client) {
+        super(game, client);
 
         super.init();
     }

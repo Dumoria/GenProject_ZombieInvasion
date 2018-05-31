@@ -1,5 +1,6 @@
 package screens;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -20,17 +21,28 @@ import java.util.Iterator;
 
 public class GameScreen implements Screen {
     public static Texture backgroundTexture;
+    private Client client;
+
     SpriteBatch batch=new SpriteBatch();
     Game game;
     Texture dropImage;
     Texture bucketImage;
     OrthographicCamera camera;
+
+    Hero hero;
+
     Rectangle bucket;
     Array<Rectangle> raindrops;
     long lastDropTime;
     int dropsGathered;
-    public GameScreen(Game game) {
-        this.game=game;
+    public GameScreen(Game game, Client client) {
+
+        //this.hero =  BOUGER les mem, fct et autre de client a gamescreen. timer présent dans cette classe,
+        //aavec reference au client on serialise le hero de cette classe, etc...
+        this.game = game;
+        this.client = client;
+        client.startGame();
+
 
         backgroundTexture = new Texture("core/src/resources/grass.jpg");
 

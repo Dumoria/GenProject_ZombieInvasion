@@ -39,7 +39,7 @@ public class LoginScreen extends GenericScreen {
 
     public LoginScreen(final Game game, final Client client) {
 
-        super(game);
+        super(game, client);
 
         connect = new TextButton("Connect", skin);
         connect.setPosition(300,150);
@@ -51,7 +51,7 @@ public class LoginScreen extends GenericScreen {
                     logged = client.loginUser(username.getText(), password.getText());
                     if(logged){
                         System.out.println("logged");
-                        game.setScreen(new StartScreen(game));
+                        game.setScreen(new StartScreen(game, client));
 
                     }
                 } catch (IOException e) {

@@ -1,5 +1,6 @@
 package screens;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -63,8 +64,8 @@ public class CommandsScreen extends GenericScreen {
         this.rightChar = rightChar;
     }
 
-    public CommandsScreen(final Game game) {
-        super(game);
+    public CommandsScreen(final Game game, final Client client) {
+        super(game, client);
 
         init();
         //----------- Command List-----------
@@ -140,7 +141,7 @@ public class CommandsScreen extends GenericScreen {
         editCommand.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new EditCommands(game)
+                game.setScreen(new EditCommands(game, client)
                 {});
             }
         });
@@ -153,7 +154,7 @@ public class CommandsScreen extends GenericScreen {
         save.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new StartScreen(game));
+                game.setScreen(new StartScreen(game, client));
             }
         });
 
@@ -167,7 +168,7 @@ public class CommandsScreen extends GenericScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //save the command in a new file (commandsNew)
-                game.setScreen(new StartScreen(game));
+                game.setScreen(new StartScreen(game, client));
             }
         });
 
