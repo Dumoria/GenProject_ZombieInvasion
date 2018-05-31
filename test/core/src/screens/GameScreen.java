@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,6 +35,7 @@ public class GameScreen implements Screen {
     Rectangle bucket;
     Array<Rectangle> raindrops;
     long lastDropTime;
+    private Music music_level1;
     int dropsGathered;
     public GameScreen(Game game, Client client) {
 
@@ -43,7 +45,9 @@ public class GameScreen implements Screen {
         this.client = client;
         client.startGame();
 
-
+        music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
+        music_level1.setLooping(true);
+        music_level1.play();
         backgroundTexture = new Texture("core/src/resources/grass.jpg");
 
         // load the images for the droplet and the bucket, 64x64 pixels each
@@ -131,8 +135,12 @@ public class GameScreen implements Screen {
         // make sure the bucket stays within the screen bounds
         if (bucket.x < 0)
             bucket.x = 0;
-        if (bucket.x > 800 - 64)
-            bucket.x = 800 - 64;
+        if (bucket.x > 640 - 64)
+            bucket.x = 640 - 64;
+        if (bucket.y < 0)
+            bucket.y = 0;
+        if (bucket.y > 480 - 64)
+            bucket.y = 480 - 64;
 
         // check if we need to create a new raindrop
         if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
