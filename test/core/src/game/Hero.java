@@ -9,7 +9,6 @@ public class Hero {
 
     private static final int FULL_CHARGOR = 15;
 
-    private int id;
     private Coord coord;
     private int prcHealth;
     private int prcArmor;
@@ -20,9 +19,8 @@ public class Hero {
     private Rectangle hero;
     private Texture herosImage;
 
-    public Hero(int id) {
+    public Hero() {
 
-        this.id = (id * 10) + 1;
         herosImage = new Texture("core/src/resources/mercenary1.png");
 
         coord = new Coord();
@@ -34,16 +32,8 @@ public class Hero {
 
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Coord getCoord() {
         return coord;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setCoord(Coord coord) {

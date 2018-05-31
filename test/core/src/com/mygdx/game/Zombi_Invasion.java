@@ -15,7 +15,7 @@ public class Zombi_Invasion extends Game {
 	@Override
 	public void create () {
 
-		Client client = new Client(0);
+		Client client = new Client();
 
 		batch=new SpriteBatch();
 
