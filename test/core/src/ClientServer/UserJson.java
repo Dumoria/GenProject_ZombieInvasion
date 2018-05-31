@@ -1,4 +1,4 @@
-package server;
+package ClientServer;
 
 import java.util.Objects;
 
@@ -6,7 +6,7 @@ public class UserJson {
 
     private String userName=null;
     private String mdp=null;
-    UserJson(String userName, String motDePasse){
+    UserJson(String userName,String motDePasse){
         this.userName=userName;
         mdp=motDePasse;
     }
@@ -17,9 +17,6 @@ public class UserJson {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-    public String toString(){
-        return userName+" "+mdp;
     }
 
     @Override

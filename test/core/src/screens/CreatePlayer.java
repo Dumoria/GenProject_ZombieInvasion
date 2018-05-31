@@ -1,6 +1,6 @@
 package screens;
 
-import com.mygdx.game.Client;
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;

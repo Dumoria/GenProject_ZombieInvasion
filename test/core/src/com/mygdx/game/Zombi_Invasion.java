@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import screens.LoginScreen;
 
