@@ -157,12 +157,12 @@ public class GameScreen implements Screen {
         // make sure the bucket stays within the screen bounds
         if (hero.getHero().x < 0)
             hero.getHero().x = 0;
-        if (hero.getHero().x > 640 - 64)
-            hero.getHero().x = 640 - 64;
+        if (hero.getHero().x > 640 - 32)
+            hero.getHero().x = 640 - 32;
         if (hero.getHero().y < 0)
             hero.getHero().y = 0;
-        if (hero.getHero().y > 480 - 64)
-            hero.getHero().y = 480 - 64;
+        if (hero.getHero().y > 480 - 32)
+            hero.getHero().y = 480 - 32;
 
         // check if we need to create a new raindrop
         if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
