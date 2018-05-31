@@ -45,6 +45,7 @@ public class LoginScreen extends GenericScreen {
                     if(logged){
                         System.out.println("logged");
                         game.setScreen(new StartScreen(game));
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
