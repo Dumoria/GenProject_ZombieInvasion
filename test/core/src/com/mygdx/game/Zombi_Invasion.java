@@ -13,7 +13,7 @@ public class Zombi_Invasion extends Game {
 
 	@Override
 	public void create () {
-		Client client = new Client();
+		Client client = new Client(0);
 
 		try {
 			client.connect("localhost", 2323);

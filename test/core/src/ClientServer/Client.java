@@ -2,6 +2,9 @@ package ClientServer;
 
 import ClientServer.Json.BonusJson;
 import ClientServer.Json.ClientJson;
+import ClientServer.Json.JoueurJson;
+import ClientServer.Json.UserJson;
+import ClientServer.Protocol;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import game.Hero;
@@ -13,6 +16,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 
@@ -38,8 +42,6 @@ public class Client {
     private LinkedList<ClientJson> teamMate;
     private LinkedList<BonusJson> bonuses;
 
-
-    //---------------Constructor---------------------------------
     //---------------Constructor---------------------------------
     public Client(int id) {
         this.connected = false;
@@ -101,8 +103,8 @@ public class Client {
         writeServer("connect");
         writeServer(tmp);
 
-            String response=in.readLine();
-            System.out.println(response);
+        String response=in.readLine();
+        System.out.println(response);
         if(response.equals("connected"))
             return true;
 
@@ -144,6 +146,31 @@ public class Client {
     public void writeServer(String str){
         out.write(str + '\n');
         out.flush();
+    }
+
+    //juste faire des envois automatisé lors d'action du joueur
+    public void startGame(){
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    manageTraffic();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 300);
+    }
+
+
+    public void manageTraffic() throws IOException{
+
+        //manage input
+
+        //prob du genre gameScreen.displayImage()
+
+        //Send coord
+        gson.toJson(new JoueurJson(id, hero.getCoord()));
     }
 
 
