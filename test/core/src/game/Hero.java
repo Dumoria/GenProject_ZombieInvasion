@@ -22,7 +22,7 @@ public class Hero {
     public Hero() {
 
         herosImage = new Texture("core/src/resources/mercenary1.png");
-
+        hero = new Rectangle();
         coord = new Coord();
         prcHealth = 100;
         prcArmor = 0;
@@ -30,6 +30,20 @@ public class Hero {
         nbChargors = 1;
         nbCash = 0;
 
+        hero.x = 800 / 2 - 32 / 2; // center the bucket horizontally
+        hero.y = 16; // bottom left corner of the bucket is 20 pixels above
+        // the bottom screen edge
+        hero.width = 32;
+        hero.height = 32;
+
+    }
+
+    public void setHero(Rectangle hero) {
+        this.hero = hero;
+    }
+
+    public void setHerosImage(Texture herosImage) {
+        this.herosImage = herosImage;
     }
 
     public Coord getCoord() {

@@ -33,14 +33,8 @@ public class Client {
 
     private String username;
     private String password;
-
-    private Timer timer;
     private int idClient;
 
-    //----------------Data game members-------------------
-    private Hero hero;
-    private LinkedList<ClientJson> teamMate;
-    private LinkedList<BonusJson> bonuses;
 
     //---------------Constructor---------------------------------
     public Client() {
@@ -49,27 +43,9 @@ public class Client {
 
         //Prépare le moteur gson
         gson = new GsonBuilder().create();
-        this.timer = new Timer();
     }
 
     //---------------Methods-------------------------------------
-
-
-    public LinkedList<ClientJson> getTeamMate() {
-        return teamMate;
-    }
-
-    public void setTeamMate(LinkedList<ClientJson> teamMate) {
-        this.teamMate = teamMate;
-    }
-
-    public LinkedList<BonusJson> getBonuses() {
-        return bonuses;
-    }
-
-    public void setBonuses(LinkedList<BonusJson> bonuses) {
-        this.bonuses = bonuses;
-    }
 
     public boolean createUser(String username, String password)throws  IOException{
 
@@ -134,7 +110,6 @@ public class Client {
         //Get a unique id from the server and create his hero
         System.out.println(readServer());
         idClient = Integer.parseInt(readServer());
-        this.hero = new Hero();
     }
 
     public void disconnect() throws IOException {
@@ -166,26 +141,11 @@ public class Client {
         out.flush();
     }
 
-
-    //juste faire des envois automatisé lors d'action du joueur
-    public void startGame(){
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try{
-                    manageTraffic();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 300);
+    public Gson getGson() {
+        return gson;
     }
 
-
-
-    public void manageTraffic() throws IOException{
-        gson.toJson(new JoueurJson(idClient, hero.getCoord()));
+    public int getIdClient() {
+        return idClient;
     }
-
-
 }

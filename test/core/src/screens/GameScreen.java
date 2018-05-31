@@ -1,6 +1,9 @@
 package screens;
 
 import ClientServer.Client;
+import ClientServer.Json.BonusJson;
+import ClientServer.Json.ClientJson;
+import ClientServer.Json.JoueurJson;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -18,7 +21,11 @@ import com.badlogic.gdx.utils.TimeUtils;
 import game.Hero;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameScreen implements Screen {
     public static Texture backgroundTexture;
@@ -27,12 +34,18 @@ public class GameScreen implements Screen {
     SpriteBatch batch=new SpriteBatch();
     Game game;
     Texture dropImage;
-    Texture bucketImage;
+    //Texture bucketImage;
     OrthographicCamera camera;
 
-    Hero hero;
 
-    Rectangle bucket;
+    //----------------Data game members-------------------
+    Hero hero;
+    private LinkedList<JoueurJson> teamMate;
+    private LinkedList<BonusJson> bonuses;
+    private Timer timer;
+    //Rectangle bucket;
+
+
     Array<Rectangle> raindrops;
     long lastDropTime;
     private Music music_level1;
@@ -42,8 +55,12 @@ public class GameScreen implements Screen {
         //this.hero =  BOUGER les mem, fct et autre de client a gamescreen. timer présent dans cette classe,
         //aavec reference au client on serialise le hero de cette classe, etc...
         this.game = game;
+        this.hero = new Hero();
+        this.timer = new Timer();
         this.client = client;
-        client.startGame();
+        teamMate = new LinkedList<>();
+        bonuses = new LinkedList<>();
+        startGame();
 
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
         music_level1.setLooping(true);
@@ -52,17 +69,17 @@ public class GameScreen implements Screen {
 
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture("core/src/resources/mercenary1.png");
-        bucketImage = new Texture("core/src/resources/mercenary1.png");
+        //bucketImage = new Texture("core/src/resources/mercenary1.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // create a Rectangle to logically represent the bucket
-        bucket = new Rectangle();
-        bucket.x = 800 / 2 - 64 / 2; // center the bucket horizontally
-        bucket.y = 20; // bottom left corner of the bucket is 20 pixels above
+        //bucket = new Rectangle();
+        //bucket.x = 800 / 2 - 64 / 2; // center the bucket horizontally
+        //bucket.y = 20; // bottom left corner of the bucket is 20 pixels above
         // the bottom screen edge
-        bucket.width = 64;
-        bucket.height = 64;
+        //bucket.width = 64;
+        //bucket.height = 64;
 
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<Rectangle>();
@@ -97,7 +114,12 @@ public class GameScreen implements Screen {
 
         // begin a new batch and draw the bucket and
         // all drops
-        batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
+        batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
+
+        for(JoueurJson joueurJson : teamMate){
+            batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
+        }
+
         for (Rectangle raindrop : raindrops) {
             batch.draw(dropImage, raindrop.x, raindrop.y);
         }
@@ -113,34 +135,34 @@ public class GameScreen implements Screen {
 
         //Gérer après coup qu'on ne recharge pas inutilement l'image
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            bucketImage = new Texture("core/src/resources/mercenary2.png");
-            bucket.x -= 200 * Gdx.graphics.getDeltaTime();
+            hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
+            hero.getHero().x -= 200 * Gdx.graphics.getDeltaTime();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            bucketImage = new Texture("core/src/resources/mercenary3.png");
-            bucket.x += 200 * Gdx.graphics.getDeltaTime();
+            hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
+            hero.getHero().x += 200 * Gdx.graphics.getDeltaTime();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            bucketImage = new Texture("core/src/resources/mercenary1.png");
-            bucket.y -= 200 * Gdx.graphics.getDeltaTime();
+            hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
+            hero.getHero().y -= 200 * Gdx.graphics.getDeltaTime();
         }
         
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            bucketImage = new Texture("core/src/resources/mercenary4.png");
-            bucket.y += 200 * Gdx.graphics.getDeltaTime();
+            hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
+            hero.getHero().y += 200 * Gdx.graphics.getDeltaTime();
         }
 
         // make sure the bucket stays within the screen bounds
-        if (bucket.x < 0)
-            bucket.x = 0;
-        if (bucket.x > 640 - 64)
-            bucket.x = 640 - 64;
-        if (bucket.y < 0)
-            bucket.y = 0;
-        if (bucket.y > 480 - 64)
-            bucket.y = 480 - 64;
+        if (hero.getHero().x < 0)
+            hero.getHero().x = 0;
+        if (hero.getHero().x > 640 - 64)
+            hero.getHero().x = 640 - 64;
+        if (hero.getHero().y < 0)
+            hero.getHero().y = 0;
+        if (hero.getHero().y > 480 - 64)
+            hero.getHero().y = 480 - 64;
 
         // check if we need to create a new raindrop
         if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
@@ -188,7 +210,24 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         dropImage.dispose();
-        bucketImage.dispose();
+        hero.getHerosImage().dispose();
     }
+
+    public void startGame(){
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                client.writeServer(client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getCoord())));
+                try{
+                    teamMate.add(client.getGson().fromJson(client.readServer(), JoueurJson.class)); //a terme utiliser fct pour reconnaitre parquet
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 300);
+    }
+
+
+
 
 }

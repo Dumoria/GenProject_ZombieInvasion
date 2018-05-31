@@ -63,9 +63,7 @@ class Enemy {
     }
 }
 
-/*
 
-import Util.Coord;
 
 public class Ennemy {
 
@@ -115,4 +113,3 @@ public class Ennemy {
 
     }
 }
-*/
