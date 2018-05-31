@@ -40,13 +40,17 @@ public class Client {
 
 
     //---------------Constructor---------------------------------
-    public Client() {
+    //---------------Constructor---------------------------------
+    public Client(int id) {
         this.connected = false;
         logged = 0;
 
-
         //Prépare le moteur gson
         gson = new GsonBuilder().create();
+
+        this.id = id;
+        this.hero = new Hero(id);
+        this.timer = new Timer();
     }
 
     //---------------Methods-------------------------------------
