@@ -1,4 +1,4 @@
-package ClientServer.Client;
+package com.mygdx.game;
 
 import ClientServer.Json.BonusJson;
 import ClientServer.Json.ClientJson;
@@ -42,20 +42,17 @@ public class Client {
     private LinkedList<BonusJson> bonuses;
 
     //---------------Constructor---------------------------------
-    public Client(int id) {
+    public Client() {
         this.connected = false;
         logged = 0;
 
         //Prépare le moteur gson
         gson = new GsonBuilder().create();
-
-        this.id = id;
-        this.hero = new Hero(id);
+        this.hero = new Hero();
         this.timer = new Timer();
     }
 
     //---------------Methods-------------------------------------
-
 
     public boolean createUser(String username, String password)throws  IOException{
 
@@ -113,7 +110,11 @@ public class Client {
     public void connect(String server, int port) throws IOException {
         socket = new Socket(server, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
         System.out.println(in.readLine());
+        id = Integer.parseInt(in.readLine());
+        hero.setIdFromClient(id);
+
         out = new PrintWriter(socket.getOutputStream());
         connected = true;
     }

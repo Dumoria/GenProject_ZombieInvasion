@@ -1,4 +1,4 @@
-package Json;
+package server;
 
 import java.util.Objects;
 

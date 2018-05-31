@@ -20,9 +20,7 @@ public class Hero {
     private Rectangle hero;
     private Texture herosImage;
 
-    public Hero(int id) {
-
-        this.id = (id * 10) + 1;
+    public Hero() {
         herosImage = new Texture("core/src/resources/mercenary1_0.png");
 
         coord = new Coord();
@@ -46,8 +44,12 @@ public class Hero {
         this.id = id;
     }
 
+    public void setIdFromClient(int id) {
+        this.id = id;
+    }
+
     public void setCoord(Coord coord) {
-        this.coord = coord;
+        this.id = (id * 10) + 1;
     }
 
     public void shoot(){

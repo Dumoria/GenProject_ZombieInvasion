@@ -14,11 +14,9 @@ import game.Hero;
 public class GameScreen extends GenericScreen {
 
 
-    private Hero hero;
 
     public GameScreen(Game game) {
         super(game,"core/src/resources/grass.jpg");
-        hero = new Hero();
     }
 
 }

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import ClientServer.Client.Client;
+import com.mygdx.game.Client;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ public class LoginScreen extends GenericScreen {
         return password;
     }
 
-    public LoginScreen(final Game game, final Client client) {
+    public LoginScreen(final Game game, final Client client) {      //VERIF final
 
         super(game);
 

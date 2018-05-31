@@ -1,12 +1,9 @@
 package server;
 
-import ClientServer.Client.Client;
 import ClientServer.Json.BonusJson;
 import ClientServer.Json.ClientJson;
 import ClientServer.Json.EnnemyJson;
 import ClientServer.Json.JoueurJson;
-import Json.UserJson;
-import Json.UserList;
 import com.google.gson.*;
 
 import java.io.*;
@@ -37,6 +34,8 @@ public class MultiThreadedServer {
     private LinkedList<ReceptionistWorker.ServantWorker> clients;
     private LinkedList<Ennemy> ennemis;
     private Timer timer;
+
+    private int idNextClient;
 
     /**
      * Constructor
@@ -297,7 +296,8 @@ public class MultiThreadedServer {
             public void run() {
                 String command = "";
 
-                out.println("Welcome to the Multi-Threaded Server. Send me text lines and conclude with the BYE command.");
+                out.println("Welcome to the Multi-Threaded Server. Send me text lines and conclude with the BYE command. Your id is: ");
+                out.println(idNextClient++);
                 out.flush();
 
                 try {
