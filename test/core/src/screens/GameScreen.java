@@ -93,8 +93,15 @@ public class GameScreen implements Screen {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
             bucket.x -= 200 * Gdx.graphics.getDeltaTime();
+
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
             bucket.x += 200 * Gdx.graphics.getDeltaTime();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
+            bucket.y -= 200 * Gdx.graphics.getDeltaTime();
+        
+        if (Gdx.input.isKeyPressed(Input.Keys.UP))
+            bucket.y += 200 * Gdx.graphics.getDeltaTime();
 
         // make sure the bucket stays within the screen bounds
         if (bucket.x < 0)
