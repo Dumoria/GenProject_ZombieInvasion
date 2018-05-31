@@ -34,7 +34,7 @@ public class Client {
     private String password;
 
     private Timer timer;
-    private int id;
+    private int idClient;
 
     //----------------Data game members-------------------
     private Hero hero;
@@ -112,8 +112,8 @@ public class Client {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         System.out.println(in.readLine());
-        id = Integer.parseInt(in.readLine());
-        hero.setIdFromClient(id);
+        idClient = Integer.parseInt(in.readLine());
+        //hero.setIxdFromClient(idClient);
 
         out = new PrintWriter(socket.getOutputStream());
         connected = true;
@@ -170,7 +170,7 @@ public class Client {
         //prob du genre gameScreen.displayImage()
 
         //Send coord
-        gson.toJson(new JoueurJson(id, hero.getCoord()));
+        //gson.toJson(new JoueurJson(idClient, hero.getCoord()));
     }
 
 
