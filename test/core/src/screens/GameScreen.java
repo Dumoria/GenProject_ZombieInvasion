@@ -35,8 +35,8 @@ public class GameScreen implements Screen {
         backgroundTexture = new Texture("core/src/resources/grass.jpg");
 
         // load the images for the droplet and the bucket, 64x64 pixels each
-        dropImage = new Texture(Gdx.files.internal("core/src/resources/mercenary1.png"));
-        bucketImage = new Texture(Gdx.files.internal("core/src/resources/mercenary1_0.png"));
+        dropImage = new Texture("core/src/resources/mercenary1.png");
+        bucketImage = new Texture("core/src/resources/mercenary1.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -94,17 +94,27 @@ public class GameScreen implements Screen {
             camera.unproject(touchPos);
             //bucket.x = touchPos.x - 64 / 2;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
+
+        //Gérer après coup qu'on ne recharge pas inutilement l'image
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            bucketImage = new Texture("core/src/resources/mercenary2.png");
             bucket.x -= 200 * Gdx.graphics.getDeltaTime();
+        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            bucketImage = new Texture("core/src/resources/mercenary3.png");
             bucket.x += 200 * Gdx.graphics.getDeltaTime();
+        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            bucketImage = new Texture("core/src/resources/mercenary1.png");
             bucket.y -= 200 * Gdx.graphics.getDeltaTime();
+        }
         
-        if (Gdx.input.isKeyPressed(Input.Keys.UP))
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            bucketImage = new Texture("core/src/resources/mercenary4.png");
             bucket.y += 200 * Gdx.graphics.getDeltaTime();
+        }
 
         // make sure the bucket stays within the screen bounds
         if (bucket.x < 0)
