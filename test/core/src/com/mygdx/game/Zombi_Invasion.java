@@ -2,18 +2,23 @@ package com.mygdx.game;
 
 import ClientServer.Client;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import screens.LoginScreen;
 
 
 import java.io.IOException;
 
 public class Zombi_Invasion extends Game {
-	//SpriteBatch batch;
+	public SpriteBatch batch;
 	//Texture img;
 
 	@Override
 	public void create () {
+
 		Client client = new Client(0);
+
+		batch=new SpriteBatch();
+
 
 		try {
 			client.connect("localhost", 2323);
@@ -39,7 +44,7 @@ public class Zombi_Invasion extends Game {
 
 	@Override
 	public void dispose () {
-		//batch.dispose();
+		batch.dispose();
 		//img.dispose();
 	}
 }
