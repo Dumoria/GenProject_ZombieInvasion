@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -18,7 +19,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
-
+    public static Texture backgroundTexture;
     SpriteBatch batch=new SpriteBatch();
     Game game;
     Texture dropImage;
@@ -31,11 +32,13 @@ public class GameScreen implements Screen {
     public GameScreen(Game game) {
         this.game=game;
 
+        backgroundTexture = new Texture("core/src/resources/grass.jpg");
+
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("core/src/resources/mercenary1.png"));
         bucketImage = new Texture(Gdx.files.internal("core/src/resources/mercenary1_0.png"));
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // create a Rectangle to logically represent the bucket
         bucket = new Rectangle();
@@ -65,9 +68,10 @@ public class GameScreen implements Screen {
         // arguments to glClearColor are the red, green
         // blue and alpha component in the range [0,1]
         // of the color to be used to clear the screen.
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        batch.begin();
+        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+        batch.draw(backgroundTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // tell the camera to update its matrices.
         camera.update();
 
@@ -77,7 +81,6 @@ public class GameScreen implements Screen {
 
         // begin a new batch and draw the bucket and
         // all drops
-        batch.begin();
         batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for (Rectangle raindrop : raindrops) {
             batch.draw(dropImage, raindrop.x, raindrop.y);
