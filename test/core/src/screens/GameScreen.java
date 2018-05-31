@@ -18,6 +18,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
+
     SpriteBatch batch=new SpriteBatch();
     Game game;
     Texture dropImage;
@@ -31,8 +32,8 @@ public class GameScreen implements Screen {
         this.game=game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
-        dropImage = new Texture(Gdx.files.internal("badlogic.png"));
-        bucketImage = new Texture(Gdx.files.internal("badlogic.png"));
+        dropImage = new Texture(Gdx.files.internal("core/src/resources/mercenary1.png"));
+        bucketImage = new Texture(Gdx.files.internal("core/src/resources/mercenary1_0.png"));
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
