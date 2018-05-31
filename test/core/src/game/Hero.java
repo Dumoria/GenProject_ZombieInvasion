@@ -23,7 +23,7 @@ public class Hero {
     public Hero(int id) {
 
         this.id = (id * 10) + 1;
-        herosImage = new Texture("core/src/resources/mercenary1_0.png");
+        herosImage = new Texture("core/src/resources/mercenary1.png");
 
         coord = new Coord();
         prcHealth = 100;
