@@ -159,6 +159,7 @@ public class GameScreen implements Screen {
             RectangleZombi raindrop = iter.next();
             raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
             raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
+            //enlever ca pour qu'il aura pas le screen you lose
             if(pos_zomb_hero(hero.getHero().x,hero.getHero().y,raindrop.x,raindrop.y)){
                 game.setScreen(new LoseScreen(game));
                 dispose();
