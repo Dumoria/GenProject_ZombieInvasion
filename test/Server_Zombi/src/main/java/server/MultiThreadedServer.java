@@ -27,6 +27,7 @@ public class MultiThreadedServer {
     private Gson moteurJson = new Gson();
     private int port;
     private static UserList userList;
+
     protected LinkedList<ReceptionistWorker.ServantWorker> clients;
     protected LinkedList<Ennemy> ennemis;
     protected Timer timer;
@@ -64,6 +65,22 @@ public class MultiThreadedServer {
         }
 
         return lignes;
+    }
+
+
+    public void checkStartGame(){
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    if(!clients.isEmpty()){
+                        System.out.println(clients.getFirst().readServer());
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 1000);
     }
 
     public void startGame(){
@@ -198,6 +215,9 @@ public class MultiThreadedServer {
 
             try {
                 serverSocket = new ServerSocket(port);
+                timer = new Timer();
+                //un seul timer pour l'ensemble des clients
+                checkStartGame();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
                 return;

@@ -53,14 +53,13 @@ public class GameScreen implements Screen {
     int dropsGathered;
     public GameScreen(Game game, Client client) {
 
-        //this.hero =  BOUGER les mem, fct et autre de client a gamescreen. timer présent dans cette classe,
-        //aavec reference au client on serialise le hero de cette classe, etc...
         this.game = game;
         this.hero = new Hero();
         this.timer = new Timer();
         this.client = client;
         teamMate = new LinkedList<>();
         bonuses = new LinkedList<>();
+        client.writeServer("Begin");
         startGame();
 
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
@@ -73,14 +72,6 @@ public class GameScreen implements Screen {
         bucketImage = new Texture("core/src/resources/zombi1.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        // create a Rectangle to logically represent the bucket
-        //bucket = new Rectangle();
-        //bucket.x = 800 / 2 - 64 / 2; // center the bucket horizontally
-        //bucket.y = 20; // bottom left corner of the bucket is 20 pixels above
-        // the bottom screen edge
-        //bucket.width = 64;
-        //bucket.height = 64;
 
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<RectangleZombi>();
@@ -95,14 +86,10 @@ public class GameScreen implements Screen {
     }
     @Override
     public void render(float delta) {
-        // clear the screen with a dark blue color. The
-        // arguments to glClearColor are the red, green
-        // blue and alpha component in the range [0,1]
-        // of the color to be used to clear the screen.
 
         batch.begin();
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         batch.draw(backgroundTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         // tell the camera to update its matrices.
         camera.update();
 
@@ -115,7 +102,6 @@ public class GameScreen implements Screen {
         batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
         for(JoueurJson joueurJson : teamMate){
-
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
         }
 
@@ -173,7 +159,6 @@ public class GameScreen implements Screen {
             raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
             raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
             raindrop.move();
-
         }
     }
     @Override
@@ -211,7 +196,10 @@ public class GameScreen implements Screen {
             public void run() {
                 client.writeServer(client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getCoord())));
                 try{
-                    teamMate.add(client.getGson().fromJson(client.readServer(), JoueurJson.class)); //a terme utiliser fct pour reconnaitre parquet
+                    //attention, rempli en continu toujours plus de joueur pour l'instant
+                    JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
+                    teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
+                    System.out.println(joueurJson.getCoord().getX() + " "  + joueurJson.getCoord().getY());
                 }catch(IOException e){
                     e.printStackTrace();
                 }
