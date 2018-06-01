@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.RectangleZombi;
+import com.mygdx.game.Zombi_Invasion;
 import game.Hero;
 
 import java.awt.*;
@@ -33,7 +34,7 @@ public class GameScreen implements Screen {
     private Client client;
 
     SpriteBatch batch=new SpriteBatch();
-    Game game;
+    Zombi_Invasion game;
     Texture dropImage;
     Texture bucketImage;
     OrthographicCamera camera;
@@ -51,7 +52,7 @@ public class GameScreen implements Screen {
     long lastDropTime;
     private Music music_level1;
     int dropsGathered;
-    public GameScreen(Game game, Client client) {
+    public GameScreen(Zombi_Invasion game, Client client) {
 
         this.game = game;
         this.hero = new Hero();
@@ -148,7 +149,7 @@ public class GameScreen implements Screen {
             hero.getHero().y = 0;
         if (hero.getHero().y > 480 - 32)
             hero.getHero().y = 480 - 32;
-        
+
 
         // move the raindrops, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
@@ -158,6 +159,10 @@ public class GameScreen implements Screen {
             RectangleZombi raindrop = iter.next();
             raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
             raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
+            if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
+                game.setScreen(new LoseScreen(game));
+                dispose();
+            }
             raindrop.move();
         }
     }

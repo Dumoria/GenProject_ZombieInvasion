@@ -3,9 +3,10 @@ package screens;
 import ClientServer.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.mygdx.game.Zombi_Invasion;
 
 public class LoadingScreen extends GenericScreen{
-    public LoadingScreen(Game game, Client client) {
+    public LoadingScreen(Zombi_Invasion game, Client client) {
         super(game, client);
         //afficher commande
 

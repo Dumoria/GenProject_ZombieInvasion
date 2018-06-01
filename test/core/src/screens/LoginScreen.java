@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import ClientServer.Client;
+import com.mygdx.game.Zombi_Invasion;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ public class LoginScreen extends GenericScreen {
         return password;
     }
 
-    public LoginScreen(final Game game, final Client client) {
+    public LoginScreen(final Zombi_Invasion game, final Client client) {
 
         super(game, client);
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.game.Zombi_Invasion;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class CreatePlayer extends GenericScreen {
     private Label titre;
     private Label userNameLogin;
     private Label mdpLogin;
-    public CreatePlayer(final Game game, final Client client) {
+    public CreatePlayer(final Zombi_Invasion game, final Client client) {
         super(game, client);
         titre = new Label("Zombie Invasion", skin);
         titre.setPosition(200, 380);
