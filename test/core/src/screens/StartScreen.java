@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.mygdx.game.Zombi_Invasion;
 
 public class StartScreen extends GenericScreen {
 
@@ -21,7 +22,7 @@ public class StartScreen extends GenericScreen {
     private TextButton highScors;
 
 
-    public StartScreen(final Game game, final Client client) { //prob role aussi pour admin
+    public StartScreen(final Zombi_Invasion game, final Client client) { //prob role aussi pour admin
 
         super(game, client);
 

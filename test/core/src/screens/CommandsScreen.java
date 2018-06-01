@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.game.Zombi_Invasion;
 
 public class CommandsScreen extends GenericScreen {
 
@@ -64,7 +65,7 @@ public class CommandsScreen extends GenericScreen {
         this.rightChar = rightChar;
     }
 
-    public CommandsScreen(final Game game, final Client client) {
+    public CommandsScreen(final Zombi_Invasion game, final Client client) {
         super(game, client);
 
         init();
