@@ -162,10 +162,7 @@ public class GameScreen implements Screen {
             hero.getHero().y = 0;
         if (hero.getHero().y > 480 - 32)
             hero.getHero().y = 480 - 32;
-
-        // check if we need to create a new raindrop
-        if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
-            spawnRaindrop();
+        
 
         // move the raindrops, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
