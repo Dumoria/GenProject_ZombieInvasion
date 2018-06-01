@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.RectangleZombi;
 import game.Hero;
 
 import java.awt.*;
@@ -34,7 +35,7 @@ public class GameScreen implements Screen {
     SpriteBatch batch=new SpriteBatch();
     Game game;
     Texture dropImage;
-    //Texture bucketImage;
+    Texture bucketImage;
     OrthographicCamera camera;
 
 
@@ -46,7 +47,7 @@ public class GameScreen implements Screen {
     //Rectangle bucket;
 
 
-    Array<Rectangle> raindrops;
+    Array<RectangleZombi> raindrops;
     long lastDropTime;
     private Music music_level1;
     int dropsGathered;
@@ -69,7 +70,7 @@ public class GameScreen implements Screen {
 
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture("core/src/resources/mercenary1.png");
-        //bucketImage = new Texture("core/src/resources/mercenary1.png");
+        bucketImage = new Texture("core/src/resources/zombi1.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -82,16 +83,13 @@ public class GameScreen implements Screen {
         //bucket.height = 64;
 
         // create the raindrops array and spawn the first raindrop
-        raindrops = new Array<Rectangle>();
+        raindrops = new Array<RectangleZombi>();
+        for(int i=0;i<7;++i)
         spawnRaindrop();
 
     }
     private void spawnRaindrop() {
-        Rectangle raindrop = new Rectangle();
-        raindrop.x = MathUtils.random(0, 800 - 64);
-        raindrop.y = 480;
-        raindrop.width = 64;
-        raindrop.height = 64;
+        RectangleZombi raindrop = new RectangleZombi();
         raindrops.add(raindrop);
         lastDropTime = TimeUtils.nanoTime();
     }
@@ -117,11 +115,12 @@ public class GameScreen implements Screen {
         batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
         for(JoueurJson joueurJson : teamMate){
+
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
         }
 
-        for (Rectangle raindrop : raindrops) {
-            batch.draw(dropImage, raindrop.x, raindrop.y);
+        for (RectangleZombi raindrop : raindrops) {
+            batch.draw(bucketImage, raindrop.x, raindrop.y);
         }
         batch.end();
 
@@ -171,18 +170,14 @@ public class GameScreen implements Screen {
         // move the raindrops, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
         // value our drops counter and add a sound effect.
-      /*  Iterator<Rectangle> iter = raindrops.iterator();
+       Iterator<RectangleZombi> iter = raindrops.iterator();
         while (iter.hasNext()) {
-            Rectangle raindrop = iter.next();
-            raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-            if (raindrop.y + 64 < 0)
-                iter.remove();
-            if (raindrop.overlaps(bucket)) {
-                dropsGathered++;
-                dropSound.play();
-                iter.remove();
-            }
-        }*/
+            RectangleZombi raindrop = iter.next();
+            raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
+            raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
+            raindrop.move();
+
+        }
     }
     @Override
     public void resize(int width, int height) {
