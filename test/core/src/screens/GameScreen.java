@@ -173,10 +173,14 @@ public class GameScreen implements Screen {
             RectangleZombi raindrop = iter.next();
             raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
             raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
-            if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
+            if(pos_zomb_hero(hero.getHero().x,hero.getHero().y,raindrop.x,raindrop.y)){
                 game.setScreen(new LoseScreen(game));
                 dispose();
             }
+         /*   if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
+                game.setScreen(new LoseScreen(game));
+                dispose();
+            }*/
             raindrop.move();
 
         }
@@ -185,6 +189,12 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
     }
 
+    private boolean pos_zomb_hero(float xz, float yz, int xh,int yh){
+        float x = xz - xh;
+        float y = yz - yh;
+        double res = Math.sqrt( x * x + y * y);
+        return res <= 100;
+    }
     @Override
     public void show() {
         // start the playback of the background music
