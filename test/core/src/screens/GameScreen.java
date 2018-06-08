@@ -161,11 +161,11 @@ public class GameScreen implements Screen {
             raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
             raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
             //enlever ca pour qu'il aura pas le screen you lose
-            if(pos_zomb_hero(hero.getHero().x,hero.getHero().y,raindrop.x,raindrop.y)){
+            /*if(pos_zomb_hero(hero.getHero().x,hero.getHero().y,raindrop.x,raindrop.y)){
                 game.setScreen(new LoseScreen(game));
                 timer.cancel();
                 dispose();
-            }
+            }*/
          /*   if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
                 game.setScreen(new LoseScreen(game));
                 dispose();
@@ -219,14 +219,17 @@ public class GameScreen implements Screen {
                 System.out.println(str2);
 
                 client.writeServer(str);
-                /*try{
-                    //attention, rempli en continu toujours plus de joueur pour l'instant
-                    JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
-                    teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
-                    System.out.println(joueurJson.getCoord().getX() + " "  + joueurJson.getCoord().getY());
-                }catch(IOException e){
-                    e.printStackTrace();
-                }*/
+
+                //if(!teamMate.isEmpty()) {
+                    try {
+                        //attention, rempli en continu toujours plus de joueur pour l'instant
+                        JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
+                        teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
+                        System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+               // }
             }
         }, 0, 3);
     }

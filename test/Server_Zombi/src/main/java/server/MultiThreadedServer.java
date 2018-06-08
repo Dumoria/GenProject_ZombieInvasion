@@ -324,6 +324,13 @@ public class MultiThreadedServer {
                                 out.flush();
                                 break;
                         }
+
+                        try {
+                            //System.out.println(clients.getFirst().readServer());
+                            manageTraffic();
+                        }catch(IOException e){
+
+                        }
                     }
 
                 } catch (IOException ex) {
@@ -345,13 +352,6 @@ public class MultiThreadedServer {
                         }
                     }
                     LOG.log(Level.SEVERE, ex.getMessage(), ex);
-                }
-
-
-                try {
-                    System.out.println(clients.getFirst().readServer());
-                }catch(IOException e){
-
                 }
 
             }
