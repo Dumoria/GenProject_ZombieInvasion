@@ -39,6 +39,12 @@ public class GameScreen implements Screen {
     Texture bucketImage;
     OrthographicCamera camera;
 
+    Rectangle shotBucket;
+    int directionShotX = 1;
+    int directionShotY = 1;
+    int directionShot;
+    int bulletCount = 100;
+
 
     //----------------Data game members-------------------
     Hero hero;
@@ -48,6 +54,8 @@ public class GameScreen implements Screen {
     //Rectangle bucket;
 
 
+
+    Texture shot;
     Array<RectangleZombi> raindrops;
     long lastDropTime;
     private Music music_level1;
@@ -64,6 +72,8 @@ public class GameScreen implements Screen {
         client.writeServer("Begin");
         startGame();
 
+        shot = new Texture("core/src/resources/bomb_3.gif");
+
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
         music_level1.setLooping(true);
         music_level1.play();
@@ -74,6 +84,11 @@ public class GameScreen implements Screen {
         bucketImage = new Texture("core/src/resources/zombi1.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        shotBucket =new Rectangle();
+
+        shotBucket.width=64;
+        shotBucket.height=64;
 
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<RectangleZombi>();
@@ -103,6 +118,13 @@ public class GameScreen implements Screen {
         // all drops
         batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
+        // begin a new batch and draw the bucket and
+        // all drops
+        //batch.draw(bucketImage, hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
+        batch.draw(shot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
+
+
+
         for(JoueurJson joueurJson : teamMate){
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
         }
@@ -124,21 +146,70 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
             hero.getHero().x -= 200 * Gdx.graphics.getDeltaTime();
+            directionShotY = -1;
+            directionShot = 0;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
             hero.getHero().x += 200 * Gdx.graphics.getDeltaTime();
+            directionShotY = 1;
+            directionShot = 1;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
             hero.getHero().y -= 200 * Gdx.graphics.getDeltaTime();
+            directionShotX = -1;
+            directionShot = 2;
         }
         
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
             hero.getHero().y += 200 * Gdx.graphics.getDeltaTime();
+            directionShotX = 1;
+            directionShot = 3;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        {
+            if(bulletCount == 0)
+                return ;
+            else
+                --bulletCount;
+            if (directionShot == 0 || directionShot == 1)
+            {
+                shotBucket.y = (int) (hero.getHero().y + (directionShotY * 20 * Gdx.graphics.getDeltaTime()));
+                shotBucket.x = (int) (hero.getHero().x + (20 * directionShotY));
+            }
+
+            if (directionShot == 2 || directionShot == 3)
+            {
+                shotBucket.y = (int) (hero.getHero().y + (directionShotX * 20 * Gdx.graphics.getDeltaTime()));
+                shotBucket.x = (int) (hero.getHero().x + ( directionShotX));
+            }
+            else
+            {
+
+            }
+
+        }
+        for(int x = 0; x <2; x++)
+        {
+
+            if (directionShot == 0 || directionShot == 1)
+            {
+                shotBucket.y = (int) (shotBucket.y + (directionShotY*5 * Gdx.graphics.getDeltaTime()));
+                shotBucket.x = (int) (shotBucket.x + (5*directionShotY));
+            }
+            else if (directionShot == 2 || directionShot == 3)
+            {
+                shotBucket.y = (int) (shotBucket.y + (directionShotX*5 * Gdx.graphics.getDeltaTime()));
+                shotBucket.x = (int) (shotBucket.x*1);
+            }
+            else
+            {
+
+            }
         }
 
         // make sure the bucket stays within the screen bounds
