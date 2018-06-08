@@ -52,6 +52,7 @@ public class GameScreen implements Screen {
     long lastDropTime;
     private Music music_level1;
     int dropsGathered;
+
     public GameScreen(Zombi_Invasion game, Client client) {
 
         this.game = game;
@@ -162,6 +163,7 @@ public class GameScreen implements Screen {
             //enlever ca pour qu'il aura pas le screen you lose
             if(pos_zomb_hero(hero.getHero().x,hero.getHero().y,raindrop.x,raindrop.y)){
                 game.setScreen(new LoseScreen(game));
+                timer.cancel();
                 dispose();
             }
          /*   if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
@@ -207,20 +209,26 @@ public class GameScreen implements Screen {
     }
 
     public void startGame(){
-        timer.schedule(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                client.writeServer(client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getCoord())));
-                try{
+
+                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getHero().x, hero.getHero().y));
+                System.out.println(str);
+                ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
+                System.out.println(str2);
+
+                client.writeServer(str);
+                /*try{
                     //attention, rempli en continu toujours plus de joueur pour l'instant
                     JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
                     teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
                     System.out.println(joueurJson.getCoord().getX() + " "  + joueurJson.getCoord().getY());
                 }catch(IOException e){
                     e.printStackTrace();
-                }
+                }*/
             }
-        }, 0, 300);
+        }, 0, 3);
     }
 
 

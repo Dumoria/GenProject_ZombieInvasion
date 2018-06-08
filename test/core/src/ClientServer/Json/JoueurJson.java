@@ -11,6 +11,11 @@ public class JoueurJson extends ClientJson {
         this.coord = coord;
     }
 
+    public JoueurJson(int idClient, float x, float y){
+        super(idClient, TypePaquet.HERO);
+        this.coord = new Coord(x, y);
+    }
+
     public Coord getCoord() {
         return coord;
     }
