@@ -12,7 +12,7 @@ public class RectangleZombi extends Rectangle {
     private static int nextId = 0;
     private int id;
     private int nbShot = 0;
-
+    public int nbRebound=0;
     public float dx = MathUtils.random(0, 2) - 1;
     public float dy = MathUtils.random(0, 2) - 1;
 
@@ -48,16 +48,21 @@ public class RectangleZombi extends Rectangle {
     }
 
     public void move() {
-        if (this.x < 0)
-            this.dx *= -1;
-        if (this.x > 640 -30){
-            this.dx *= -1;
+        if (this.x < 0){
+            this.dx *= -1;nbRebound++;
+            this.zombiImage=new Texture("core/src/resources/zombi1.png");
+        }
+        if (this.x > 640 - 30) {
+            this.dx *= -1;nbRebound++;
+            this.zombiImage=new Texture("core/src/resources/zombi3.png");
 
         }
-        if (this.y < 0)
-            this.dy *= -1;
-        if (this.y > 480 -30){
-            this.dy *= -1;
+        if (this.y < 0){
+            this.dy *= -1;nbRebound++;
+            this.zombiImage=new Texture("core/src/resources/zombi4.png");}
+        if (this.y > 480 - 30) {
+            this.dy *= -1;nbRebound++;
+            this.zombiImage=new Texture("core/src/resources/zombi2.png");
         }
     }
 
