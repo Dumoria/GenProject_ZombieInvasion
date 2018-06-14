@@ -11,7 +11,7 @@ public class RecrangleBullet extends Rectangle {
     public float dy ;
 
     public RecrangleBullet(int x, int y){
-        super(x,y,32,32);
+        super(x,y,33,33);
     }
 
     public RecrangleBullet() {

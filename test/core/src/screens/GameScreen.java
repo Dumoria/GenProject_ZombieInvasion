@@ -37,8 +37,6 @@ public class GameScreen implements Screen {
     OrthographicCamera camera;
 
 
-
-
     //----------------Data game members-------------------
     Hero hero;
     private LinkedList<JoueurJson> teamMate;
@@ -56,6 +54,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(Zombi_Invasion game, Client client) {
 
+        lastDropTime = TimeUtils.nanoTime();
         this.game = game;
         this.hero = new Hero();
         this.timer = new Timer();
@@ -65,7 +64,7 @@ public class GameScreen implements Screen {
         client.writeServer("Begin");
         startGame();
 
-        shot = new Texture("core/src/resources/bomb_3.gif");
+        shot = new Texture("core/src/resources/bomb.jpg");
 
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
         music_level1.setLooping(true);
@@ -74,14 +73,13 @@ public class GameScreen implements Screen {
 
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture("core/src/resources/mercenary1.png");
-        bucketImage = new Texture("core/src/resources/zombi1.png");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
         // create the zombis array and spawn the first raindrop
         zombis = new Array<RectangleZombi>();
-        bullets=new Array<RecrangleBullet>();
+        bullets = new Array<RecrangleBullet>();
         for (int i = 0; i < 7; ++i)
             spawnZombi();
 
@@ -90,7 +88,6 @@ public class GameScreen implements Screen {
     private void spawnZombi() {
         RectangleZombi Zombi = new RectangleZombi();
         zombis.add(Zombi);
-        lastDropTime = TimeUtils.nanoTime();
     }
 
     @Override
@@ -115,7 +112,6 @@ public class GameScreen implements Screen {
         //batch.draw(shot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
 
 
-
         // begin a new batch and draw the bucket and
         // all drops
         //batch.draw(bucketImage, hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
@@ -124,8 +120,8 @@ public class GameScreen implements Screen {
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.width, hero.height);
         }
 
-        for (RectangleZombi raindrop : zombis) {
-            batch.draw(bucketImage, raindrop.x, raindrop.y);
+        for (RectangleZombi zombi : zombis) {
+            batch.draw(zombi.zombiImage, zombi.x, zombi.y);
         }
         for (Rectangle bullet : bullets) {
             batch.draw(shot, bullet.x, bullet.y);
@@ -142,32 +138,37 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
             hero.x -= 200 * Gdx.graphics.getDeltaTime();
+            hero.dx = 1;
+            hero.dy = 0;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
             hero.x += 200 * Gdx.graphics.getDeltaTime();
-
+            hero.dx = -1;
+            hero.dy = 0;
 
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
             hero.y -= 200 * Gdx.graphics.getDeltaTime();
-
+            hero.dx = 0;
+            hero.dy = 1;
 
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
             hero.y += 200 * Gdx.graphics.getDeltaTime();
-
+            hero.dx = 0;
+            hero.dy = -1;
 
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            RecrangleBullet shotBucket = new RecrangleBullet((int)hero.x,(int)hero.y);
-            shotBucket.dx=-1;
-            shotBucket.dy=1;
+            RecrangleBullet shotBucket = new RecrangleBullet((int) hero.x, (int) hero.y);
+            shotBucket.dx = hero.dx;
+            shotBucket.dy = hero.dy;
             shotBucket.width = 32;
             shotBucket.height = 32;
             bullets.add(shotBucket);
@@ -187,8 +188,11 @@ public class GameScreen implements Screen {
         Iterator<RecrangleBullet> iterbullets = bullets.iterator();
         while (iterbullets.hasNext()) {
             RecrangleBullet bullet = iterbullets.next();
-           // bullet.y -= bullet.dy * 100 * Gdx.graphics.getDeltaTime();
-            bullet.x -= bullet.dx * 100 * Gdx.graphics.getDeltaTime();
+            bullet.y -= bullet.dy * 200 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 200 * Gdx.graphics.getDeltaTime();
+            if (bullet.x < 0 || bullet.x > 640 || bullet.y < 0 || bullet.y > 480) {
+                iterbullets.remove();
+            }
         }
 
         // move the zombis, remove any that are beneath the bottom edge of
@@ -196,10 +200,26 @@ public class GameScreen implements Screen {
         // value our drops counter and add a sound effect.
         Iterator<RectangleZombi> iter = zombis.iterator();
         while (iter.hasNext()) {
-            RectangleZombi raindrop = iter.next();
-            raindrop.y -= raindrop.dy * 100 * Gdx.graphics.getDeltaTime();
-            raindrop.x -= raindrop.dx * 100 * Gdx.graphics.getDeltaTime();
-            //enlever ca pour qu'il aura pas le screen you lose
+            RectangleZombi zombi = iter.next();
+            zombi.y -= zombi.dy * 100 * Gdx.graphics.getDeltaTime();
+            zombi.x -= zombi.dx * 100 * Gdx.graphics.getDeltaTime();
+            if (zombi.x < 0){
+                zombi.dx *= -1;
+                zombi.zombiImage=new Texture("core/src/resources/zombi1.png");
+            }
+            if (zombi.x > 640 - 30) {
+                zombi.dx *= -1;
+                zombi.zombiImage=new Texture("core/src/resources/zombi3.png");
+
+            }
+            if (zombi.y < 0){
+                zombi.dy *= -1;
+                zombi.zombiImage=new Texture("core/src/resources/zombi4.png");}
+            if (zombi.y > 480 - 30) {
+                zombi.dy *= -1;
+                zombi.zombiImage=new Texture("core/src/resources/zombi2.png");
+            }
+                //enlever ca pour qu'il aura pas le screen you lose
 
             /*
             if (pos_zomb_hero(hero.getHero().x, hero.getHero().y, raindrop.x, raindrop.y)) {
@@ -218,76 +238,76 @@ public class GameScreen implements Screen {
                 dispose();
             }*/
 
-                raindrop.move();
+
+
+            }
+
+            batch.end();
 
         }
 
-        batch.end();
+        @Override
+        public void resize ( int width, int height){
+        }
 
-    }
+        private boolean pos_zomb_hero ( float xz, float yz, int xh, int yh){
+            float x = xz - xh;
+            float y = yz - yh;
+            double res = Math.sqrt(x * x + y * y);
+            return res <= 100;
+        }
 
-    @Override
-    public void resize(int width, int height) {
-    }
+        @Override
+        public void show () {
+            // start the playback of the background music
+            // when the screen is shown
+            // rainMusic.play();
+        }
 
-    private boolean pos_zomb_hero(float xz, float yz, int xh, int yh) {
-        float x = xz - xh;
-        float y = yz - yh;
-        double res = Math.sqrt(x * x + y * y);
-        return res <= 100;
-    }
+        @Override
+        public void hide () {
+        }
 
-    @Override
-    public void show() {
-        // start the playback of the background music
-        // when the screen is shown
-        // rainMusic.play();
-    }
+        @Override
+        public void pause () {
+        }
 
-    @Override
-    public void hide() {
-    }
+        @Override
+        public void resume () {
+        }
 
-    @Override
-    public void pause() {
-    }
+        @Override
+        public void dispose () {
+            dropImage.dispose();
+            hero.getHerosImage().dispose();
+        }
 
-    @Override
-    public void resume() {
-    }
+        public void startGame () {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
 
-    @Override
-    public void dispose() {
-        dropImage.dispose();
-        hero.getHerosImage().dispose();
-    }
+                    String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.x, hero.y));
+                    System.out.println(str);
+                    ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
+                    System.out.println(str2);
 
-    public void startGame() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
+                    client.writeServer(str);
 
-                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.x, hero.y));
-                System.out.println(str);
-                ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
-                System.out.println(str2);
+                    //if(!teamMate.isEmpty()) {
+                    try {
+                        //attention, rempli en continu toujours plus de joueur pour l'instant
+                        JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
+                        teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
+                        System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    // }
 
-                client.writeServer(str);
-
-                //if(!teamMate.isEmpty()) {
-                try {
-                    //attention, rempli en continu toujours plus de joueur pour l'instant
-                    JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
-                    teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
-                    System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-                // }
+            }, 0, 3);
+        }
 
-            }
-        }, 0, 3);
+
     }
-
-
-}
