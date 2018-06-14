@@ -9,7 +9,7 @@ public class Hero extends Rectangle{
 
     private static final int FULL_CHARGOR = 15;
 
-
+    public float dx,dy;
     private int prcHealth;
     private int prcArmor;
     private int nbBullets;
@@ -25,6 +25,8 @@ public class Hero extends Rectangle{
         nbBullets = FULL_CHARGOR;
         nbChargors = 1;
         nbCash = 0;
+        dx=0;
+        dy=-1;
 
     }
 
