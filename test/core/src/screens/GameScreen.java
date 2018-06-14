@@ -62,7 +62,7 @@ public class GameScreen implements Screen {
         this.client = client;
         teamMate = new LinkedList<>();
         bonuses = new LinkedList<>();
-        client.writeServer("Begin");
+
         startGame();
 
         shot = new Texture("core/src/resources/bomb_3.gif");
@@ -274,17 +274,25 @@ public class GameScreen implements Screen {
 
                 client.writeServer(str);
 
-                //if(!teamMate.isEmpty()) {
                 try {
-                    //attention, rempli en continu toujours plus de joueur pour l'instant
+                    //interbloquage.
+                    /*
+                    On se connecte au premier client, envois ses coords puis se bloque en lecture
+                    Serveur recoit est en fait rien
+                    Deuxieme arrive et fait la meme. Nop
+                    Serveur devrait transmettre au premier et relancer le mecanisme
+
+                    PAR CONTRE, serveur va tenter de lire du premier client et va bloquer sur cette instruction
+
+
+                     */
                     JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
-                    teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
+                    if(!teamMate.contains(joueurJson))
+                        teamMate.add(joueurJson);
                     System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                // }
-
             }
         }, 0, 3);
     }

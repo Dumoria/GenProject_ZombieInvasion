@@ -1,9 +1,8 @@
 package server;
 
 import ClientServer.Json.*;
-import com.google.gson.*;
+import com.google.gson.Gson;
 import com.mygdx.game.RectangleZombi;
-
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -68,35 +67,6 @@ public class MultiThreadedServer {
         return lignes;
     }
 
-
-    public void checkStartGame(){ //deja bloquant, pas besoin de timer, enfin, besoin que de un seul bloquage
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try{
-                    if(!clients.isEmpty()){ //atta atta, tant que empty check toute les sec mais bloquant dés que client sur read
-                        System.out.println(clients.getFirst().readServer());
-                    }
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 1000);
-    }
-
-    public void startGame(){
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try{
-                    manageTraffic();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 300);
-    }
-
     public TypePaquet getResponseClass(String str){
         ClientJson tmp = moteurJson.fromJson(str, ClientJson.class);
         return tmp.getTypePaquet();
@@ -146,15 +116,20 @@ public class MultiThreadedServer {
         }
     }
 
+
     public void manageTraffic() throws IOException{
 
+        int size = clients.size() - 1;
         //Deal with the input received from each client
-        for(ReceptionistWorker.ServantWorker worker : clients){
+        for(int i = size; i >= 0; --i){
 
+            System.out.println("before");
             //Read input
-            String clientData = worker.readServer();
+            String clientData = clients.get(i).readServer();
+
             ClientJson clientJson = parseResponse(clientData);
             int id = clientJson.getIdClient();
+            System.out.println(clientData);
 
             switch (clientJson.getTypePaquet()){
                 case CLIENT:    //Pour deconnexion
@@ -175,12 +150,12 @@ public class MultiThreadedServer {
         }
 
         //Zombis position update
-        for(RectangleZombi ennemy : ennemis){
+        /*for(RectangleZombi ennemy : ennemis){
             ennemy.updatePosition();
         }
 
         //Send new zombis position
-        broadcast(moteurJson.toJson(ennemis));
+        broadcast(moteurJson.toJson(ennemis));*/
     }
 
     /**
@@ -192,7 +167,7 @@ public class MultiThreadedServer {
      */
     public void serveClients() {
         LOG.info("Starting the Receptionist Worker on a new thread...");
-        new Thread(new ReceptionistWorker(clients)).start();
+        new Thread(new ReceptionistWorker()).start();
     }
 
     /**
@@ -203,12 +178,10 @@ public class MultiThreadedServer {
      */
     private class ReceptionistWorker implements Runnable {
 
-        protected LinkedList<ReceptionistWorker.ServantWorker> clients;
-        protected int nextIdClient;
         private ServerSocket serverSocket;
+        protected int nextIdClient = 0;
 
-        public ReceptionistWorker(LinkedList<ReceptionistWorker.ServantWorker> clients) {
-            this.clients = clients;
+        public ReceptionistWorker() {
         }
 
         @Override
@@ -216,9 +189,6 @@ public class MultiThreadedServer {
 
             try {
                 serverSocket = new ServerSocket(port);
-                //timer = new Timer();
-                //un seul timer pour l'ensemble des clients
-                //checkStartGame();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
                 return;
@@ -226,12 +196,15 @@ public class MultiThreadedServer {
 
             while (true) {
                 LOG.log(Level.INFO, "Waiting (blocking) for a new client on port " + port);
+
                 try {
                     Socket clientSocket = serverSocket.accept();
                     LOG.info("A new client has arrived. Starting a new thread and delegating work to a new servant...");
 
                     ServantWorker servantWorker = new ServantWorker(clientSocket);
-                    clients.add(servantWorker);      //Add client to the clients list
+                    if(clients.isEmpty())
+                        new Thread(new ServerManagerWorker(clients));    //Create server Manager
+                    clients.add(servantWorker);                          //Add client to the clients list
 
                     new Thread(servantWorker).start();
 
@@ -240,6 +213,35 @@ public class MultiThreadedServer {
                 }
             }
 
+        }
+
+        private class ServerManagerWorker implements Runnable {
+
+            protected LinkedList<ReceptionistWorker.ServantWorker> clients;
+            protected int nextIdClient;
+
+            public ServerManagerWorker(LinkedList<ReceptionistWorker.ServantWorker> clients){
+                this.clients = clients;
+            }
+
+            public void startGame(){
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try{
+                            manageTraffic();
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, 0, 300);
+            }
+
+
+            @Override
+            public void run() {
+                startGame();
+            }
         }
 
         /**
@@ -255,6 +257,8 @@ public class MultiThreadedServer {
             PrintWriter out = null;
             private Boolean done=false;
 
+
+
             public ServantWorker(Socket clientSocket) {
                 try {
                     this.clientSocket = clientSocket;
@@ -264,6 +268,7 @@ public class MultiThreadedServer {
                     Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
 
             public String readServer() throws IOException{
                 return in.readLine();
