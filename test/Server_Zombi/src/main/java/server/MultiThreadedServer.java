@@ -2,7 +2,8 @@ package server;
 
 import ClientServer.Json.*;
 import com.google.gson.*;
-import game.Ennemy;
+import com.mygdx.game.RectangleZombi;
+
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -29,7 +30,7 @@ public class MultiThreadedServer {
     private static UserList userList;
 
     protected LinkedList<ReceptionistWorker.ServantWorker> clients;
-    protected LinkedList<Ennemy> ennemis;
+    protected LinkedList<RectangleZombi> ennemis;
     protected Timer timer;
 
     /**
@@ -134,7 +135,7 @@ public class MultiThreadedServer {
     }
 
     public void handleShots(int idZombi){
-        for(Ennemy ennemy : ennemis){
+        for(RectangleZombi ennemy : ennemis){
             if(idZombi == ennemy.getId()) {
 
                 //Shoot zombi and check if dead
@@ -174,7 +175,7 @@ public class MultiThreadedServer {
         }
 
         //Zombis position update
-        for(Ennemy ennemy : ennemis){
+        for(RectangleZombi ennemy : ennemis){
             ennemy.updatePosition();
         }
 
