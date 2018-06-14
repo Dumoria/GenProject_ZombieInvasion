@@ -27,6 +27,7 @@ public class MultiThreadedServer {
     private Gson moteurJson = new Gson();
     private int port;
     private static UserList userList;
+
     protected LinkedList<ReceptionistWorker.ServantWorker> clients;
     protected LinkedList<Ennemy> ennemis;
     protected Timer timer;
@@ -64,6 +65,22 @@ public class MultiThreadedServer {
         }
 
         return lignes;
+    }
+
+
+    public void checkStartGame(){ //deja bloquant, pas besoin de timer, enfin, besoin que de un seul bloquage
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    if(!clients.isEmpty()){ //atta atta, tant que empty check toute les sec mais bloquant dés que client sur read
+                        System.out.println(clients.getFirst().readServer());
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 1000);
     }
 
     public void startGame(){
@@ -198,6 +215,9 @@ public class MultiThreadedServer {
 
             try {
                 serverSocket = new ServerSocket(port);
+                //timer = new Timer();
+                //un seul timer pour l'ensemble des clients
+                //checkStartGame();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
                 return;
@@ -213,6 +233,7 @@ public class MultiThreadedServer {
                     clients.add(servantWorker);      //Add client to the clients list
 
                     new Thread(servantWorker).start();
+
                 } catch (IOException ex) {
                     Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -300,7 +321,15 @@ public class MultiThreadedServer {
                                     userList.addUser(userToAdd);
                                     out.write("compte créer\n");
                                 }
-                                out.flush();break;
+                                out.flush();
+                                break;
+                        }
+
+                        try {
+                            //System.out.println(clients.getFirst().readServer());
+                            manageTraffic();
+                        }catch(IOException e){
+
                         }
                     }
 

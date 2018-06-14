@@ -4,20 +4,17 @@ import ClientServer.Client;
 import ClientServer.Json.BonusJson;
 import ClientServer.Json.ClientJson;
 import ClientServer.Json.JoueurJson;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.RecrangleBullet;
 import com.mygdx.game.RectangleZombi;
 import com.mygdx.game.Zombi_Invasion;
 import game.Hero;
@@ -40,6 +37,8 @@ public class GameScreen implements Screen {
     OrthographicCamera camera;
 
 
+
+
     //----------------Data game members-------------------
     Hero hero;
     private LinkedList<JoueurJson> teamMate;
@@ -48,22 +47,25 @@ public class GameScreen implements Screen {
     //Rectangle bucket;
 
 
-    Array<RectangleZombi> raindrops;
+    Texture shot;
+    Array<RecrangleBullet> bullets;
+    Array<RectangleZombi> zombis;
     long lastDropTime;
     private Music music_level1;
     int dropsGathered;
 
     public GameScreen(Zombi_Invasion game, Client client) {
 
-        //this.hero =  BOUGER les mem, fct et autre de client a gamescreen. timer présent dans cette classe,
-        //aavec reference au client on serialise le hero de cette classe, etc...
         this.game = game;
         this.hero = new Hero();
         this.timer = new Timer();
         this.client = client;
         teamMate = new LinkedList<>();
         bonuses = new LinkedList<>();
+        client.writeServer("Begin");
         startGame();
+
+        shot = new Texture("core/src/resources/bomb_3.gif");
 
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
         music_level1.setLooping(true);
@@ -76,37 +78,26 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // create a Rectangle to logically represent the bucket
-        //bucket = new Rectangle();
-        //bucket.x = 800 / 2 - 64 / 2; // center the bucket horizontally
-        //bucket.y = 20; // bottom left corner of the bucket is 20 pixels above
-        // the bottom screen edge
-        //bucket.width = 64;
-        //bucket.height = 64;
 
-        // create the raindrops array and spawn the first raindrop
-        raindrops = new Array<RectangleZombi>();
+        // create the zombis array and spawn the first raindrop
+        zombis = new Array<RectangleZombi>();
+        bullets=new Array<RecrangleBullet>();
         for (int i = 0; i < 7; ++i)
-            spawnRaindrop();
+            spawnZombi();
 
     }
 
-    private void spawnRaindrop() {
-        RectangleZombi raindrop = new RectangleZombi();
-        raindrops.add(raindrop);
+    private void spawnZombi() {
+        RectangleZombi Zombi = new RectangleZombi();
+        zombis.add(Zombi);
         lastDropTime = TimeUtils.nanoTime();
     }
 
     @Override
     public void render(float delta) {
-        // clear the screen with a dark blue color. The
-        // arguments to glClearColor are the red, green
-        // blue and alpha component in the range [0,1]
-        // of the color to be used to clear the screen.
 
         batch.begin();
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         // tell the camera to update its matrices.
         camera.update();
 
@@ -114,20 +105,31 @@ public class GameScreen implements Screen {
         // coordinate system specified by the camera.
         batch.setProjectionMatrix(camera.combined);
 
+        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+
         // begin a new batch and draw the bucket and
         // all drops
         batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
+        //batch.draw(shot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
+
+
+
+        // begin a new batch and draw the bucket and
+        // all drops
+        //batch.draw(bucketImage, hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
         for (JoueurJson joueurJson : teamMate) {
-
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
         }
 
-        for (RectangleZombi raindrop : raindrops) {
+        for (RectangleZombi raindrop : zombis) {
             batch.draw(bucketImage, raindrop.x, raindrop.y);
         }
-        batch.end();
-
+        for (Rectangle bullet : bullets) {
+            batch.draw(shot, bullet.x, bullet.y);
+        }
         // process user input
         if (Gdx.input.isTouched()) {
             Vector3 touchPos = new Vector3();
@@ -140,21 +142,38 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
             hero.getHero().x -= 200 * Gdx.graphics.getDeltaTime();
+
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
             hero.getHero().x += 200 * Gdx.graphics.getDeltaTime();
+
+
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
             hero.getHero().y -= 200 * Gdx.graphics.getDeltaTime();
+
+
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
             hero.getHero().y += 200 * Gdx.graphics.getDeltaTime();
+
+
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            RecrangleBullet shotBucket = new RecrangleBullet();
+            shotBucket.dx=1;
+            shotBucket.dy=1;
+            shotBucket.width = 32;
+            shotBucket.height = 32;
+            bullets.add(shotBucket);
+            batch.draw(shot, hero.getHero().x, hero.getHero().y, shotBucket.width, shotBucket.height);
+
         }
 
         // make sure the bucket stays within the screen bounds
@@ -166,17 +185,23 @@ public class GameScreen implements Screen {
             hero.getHero().y = 0;
         if (hero.getHero().y > 480 - 32)
             hero.getHero().y = 480 - 32;
+        Iterator<RecrangleBullet> iterbullets = bullets.iterator();
+        while (iterbullets.hasNext()) {
+            RecrangleBullet bullet = iterbullets.next();
+            bullet.y -= bullet.dy * 100 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 100 * Gdx.graphics.getDeltaTime();
+        }
 
-
-        // move the raindrops, remove any that are beneath the bottom edge of
+        // move the zombis, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
         // value our drops counter and add a sound effect.
-        Iterator<RectangleZombi> iter = raindrops.iterator();
+        Iterator<RectangleZombi> iter = zombis.iterator();
         while (iter.hasNext()) {
             RectangleZombi raindrop = iter.next();
             raindrop.y -= raindrop.dy * 100 * Gdx.graphics.getDeltaTime();
             raindrop.x -= raindrop.dx * 100 * Gdx.graphics.getDeltaTime();
             //enlever ca pour qu'il aura pas le screen you lose
+
             /*
             if (pos_zomb_hero(hero.getHero().x, hero.getHero().y, raindrop.x, raindrop.y)) {
 
@@ -186,13 +211,20 @@ public class GameScreen implements Screen {
                 raindrop.x = (int) (hero.getHero().x-res);
                 raindrop.y = (int) (hero.getHero().y - res);
             }*/
-           if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
+
+
+
+         /*   if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
                 game.setScreen(new LoseScreen(game));
                 dispose();
-            }
-            raindrop.move();
+            }*/
+
+                raindrop.move();
 
         }
+
+        batch.end();
+
     }
 
     @Override
@@ -232,17 +264,30 @@ public class GameScreen implements Screen {
     }
 
     public void startGame() {
-        timer.schedule(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                client.writeServer(client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getCoord())));
+
+                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getHero().x, hero.getHero().y));
+                System.out.println(str);
+                ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
+                System.out.println(str2);
+
+                client.writeServer(str);
+
+                //if(!teamMate.isEmpty()) {
                 try {
-                    teamMate.add(client.getGson().fromJson(client.readServer(), JoueurJson.class)); //a terme utiliser fct pour reconnaitre parquet
+                    //attention, rempli en continu toujours plus de joueur pour l'instant
+                    JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
+                    teamMate.add(joueurJson); //a terme utiliser fct pour reconnaitre parquet
+                    System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                // }
+
             }
-        }, 0, 300);
+        }, 0, 3);
     }
 
 

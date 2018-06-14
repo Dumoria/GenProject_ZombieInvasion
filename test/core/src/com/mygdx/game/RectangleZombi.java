@@ -16,7 +16,6 @@ public class RectangleZombi extends Rectangle {
         while (dx == 0 && dy == 0) {
             dx = MathUtils.random(0, 2) - 1;
             dy = MathUtils.random(0, 2) - 1;
-            ;
         }
 
     }
