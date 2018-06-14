@@ -10,8 +10,8 @@ public class RecrangleBullet extends Rectangle {
 
     public float dy ;
 
-    public RecrangleBullet(int x,int y){
-        super(x,y);
+    public RecrangleBullet(int x, int y){
+        super(x,y,32,32);
     }
 
     public RecrangleBullet() {

@@ -111,7 +111,7 @@ public class GameScreen implements Screen {
 
         // begin a new batch and draw the bucket and
         // all drops
-        batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
+        batch.draw(hero.getHerosImage(), hero.x, hero.y, hero.width, hero.height);
         //batch.draw(shot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
 
 
@@ -121,7 +121,7 @@ public class GameScreen implements Screen {
         //batch.draw(bucketImage, hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
         for (JoueurJson joueurJson : teamMate) {
-            batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
+            batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.width, hero.height);
         }
 
         for (RectangleZombi raindrop : zombis) {
@@ -141,54 +141,53 @@ public class GameScreen implements Screen {
         //Gérer après coup qu'on ne recharge pas inutilement l'image
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
-            hero.getHero().x -= 200 * Gdx.graphics.getDeltaTime();
-
+            hero.x -= 200 * Gdx.graphics.getDeltaTime();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
-            hero.getHero().x += 200 * Gdx.graphics.getDeltaTime();
+            hero.x += 200 * Gdx.graphics.getDeltaTime();
 
 
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
-            hero.getHero().y -= 200 * Gdx.graphics.getDeltaTime();
+            hero.y -= 200 * Gdx.graphics.getDeltaTime();
 
 
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
-            hero.getHero().y += 200 * Gdx.graphics.getDeltaTime();
+            hero.y += 200 * Gdx.graphics.getDeltaTime();
 
 
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            RecrangleBullet shotBucket = new RecrangleBullet();
-            shotBucket.dx=1;
+            RecrangleBullet shotBucket = new RecrangleBullet((int)hero.x,(int)hero.y);
+            shotBucket.dx=-1;
             shotBucket.dy=1;
             shotBucket.width = 32;
             shotBucket.height = 32;
             bullets.add(shotBucket);
-            batch.draw(shot, hero.getHero().x, hero.getHero().y, shotBucket.width, shotBucket.height);
+            batch.draw(shot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
 
         }
 
         // make sure the bucket stays within the screen bounds
-        if (hero.getHero().x < 0)
-            hero.getHero().x = 0;
-        if (hero.getHero().x > 640 - 32)
-            hero.getHero().x = 640 - 32;
-        if (hero.getHero().y < 0)
-            hero.getHero().y = 0;
-        if (hero.getHero().y > 480 - 32)
-            hero.getHero().y = 480 - 32;
+        if (hero.x < 0)
+            hero.x = 0;
+        if (hero.x > 640 - 32)
+            hero.x = 640 - 32;
+        if (hero.y < 0)
+            hero.y = 0;
+        if (hero.y > 480 - 32)
+            hero.y = 480 - 32;
         Iterator<RecrangleBullet> iterbullets = bullets.iterator();
         while (iterbullets.hasNext()) {
             RecrangleBullet bullet = iterbullets.next();
-            bullet.y -= bullet.dy * 100 * Gdx.graphics.getDeltaTime();
+           // bullet.y -= bullet.dy * 100 * Gdx.graphics.getDeltaTime();
             bullet.x -= bullet.dx * 100 * Gdx.graphics.getDeltaTime();
         }
 
@@ -268,7 +267,7 @@ public class GameScreen implements Screen {
             @Override
             public void run() {
 
-                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getHero().x, hero.getHero().y));
+                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.x, hero.y));
                 System.out.println(str);
                 ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
                 System.out.println(str2);
