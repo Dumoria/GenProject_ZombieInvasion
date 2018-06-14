@@ -33,7 +33,7 @@ public class GameScreen implements Screen {
     public static Texture backgroundTexture;
     private Client client;
 
-    SpriteBatch batch=new SpriteBatch();
+    SpriteBatch batch = new SpriteBatch();
     Zombi_Invasion game;
     Texture dropImage;
     Texture bucketImage;
@@ -52,6 +52,7 @@ public class GameScreen implements Screen {
     long lastDropTime;
     private Music music_level1;
     int dropsGathered;
+
     public GameScreen(Zombi_Invasion game, Client client) {
 
         //this.hero =  BOUGER les mem, fct et autre de client a gamescreen. timer présent dans cette classe,
@@ -85,15 +86,17 @@ public class GameScreen implements Screen {
 
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<RectangleZombi>();
-        for(int i=0;i<7;++i)
-        spawnRaindrop();
+        for (int i = 0; i < 7; ++i)
+            spawnRaindrop();
 
     }
+
     private void spawnRaindrop() {
         RectangleZombi raindrop = new RectangleZombi();
         raindrops.add(raindrop);
         lastDropTime = TimeUtils.nanoTime();
     }
+
     @Override
     public void render(float delta) {
         // clear the screen with a dark blue color. The
@@ -103,7 +106,7 @@ public class GameScreen implements Screen {
 
         batch.begin();
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        batch.draw(backgroundTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // tell the camera to update its matrices.
         camera.update();
 
@@ -115,7 +118,7 @@ public class GameScreen implements Screen {
         // all drops
         batch.draw(hero.getHerosImage(), hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
-        for(JoueurJson joueurJson : teamMate){
+        for (JoueurJson joueurJson : teamMate) {
 
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.getHero().width, hero.getHero().height);
         }
@@ -148,7 +151,7 @@ public class GameScreen implements Screen {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
             hero.getHero().y -= 200 * Gdx.graphics.getDeltaTime();
         }
-        
+
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
             hero.getHero().y += 200 * Gdx.graphics.getDeltaTime();
@@ -168,39 +171,46 @@ public class GameScreen implements Screen {
         // move the raindrops, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
         // value our drops counter and add a sound effect.
-       Iterator<RectangleZombi> iter = raindrops.iterator();
+        Iterator<RectangleZombi> iter = raindrops.iterator();
         while (iter.hasNext()) {
             RectangleZombi raindrop = iter.next();
-            raindrop.y -= raindrop.dy*100 * Gdx.graphics.getDeltaTime();
-            raindrop.x -= raindrop.dx*100 * Gdx.graphics.getDeltaTime();
+            raindrop.y -= raindrop.dy * 100 * Gdx.graphics.getDeltaTime();
+            raindrop.x -= raindrop.dx * 100 * Gdx.graphics.getDeltaTime();
             //enlever ca pour qu'il aura pas le screen you lose
-            if(pos_zomb_hero(hero.getHero().x,hero.getHero().y,raindrop.x,raindrop.y)){
+            /*
+            if (pos_zomb_hero(hero.getHero().x, hero.getHero().y, raindrop.x, raindrop.y)) {
+
+                float x = hero.getHero().x - raindrop.x;
+                float y = hero.getHero().y - raindrop.y;
+                double res = Math.sqrt(x * x + y * y);
+                raindrop.x = (int) (hero.getHero().x-res);
+                raindrop.y = (int) (hero.getHero().y - res);
+            }*/
+           if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
                 game.setScreen(new LoseScreen(game));
                 dispose();
             }
-         /*   if (raindrop.contains(hero.getHero().x,hero.getHero().y)){
-                game.setScreen(new LoseScreen(game));
-                dispose();
-            }*/
             raindrop.move();
 
         }
     }
+
     @Override
     public void resize(int width, int height) {
     }
 
-    private boolean pos_zomb_hero(float xz, float yz, int xh,int yh){
+    private boolean pos_zomb_hero(float xz, float yz, int xh, int yh) {
         float x = xz - xh;
         float y = yz - yh;
-        double res = Math.sqrt( x * x + y * y);
+        double res = Math.sqrt(x * x + y * y);
         return res <= 100;
     }
+
     @Override
     public void show() {
         // start the playback of the background music
         // when the screen is shown
-       // rainMusic.play();
+        // rainMusic.play();
     }
 
     @Override
@@ -221,21 +231,19 @@ public class GameScreen implements Screen {
         hero.getHerosImage().dispose();
     }
 
-    public void startGame(){
+    public void startGame() {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 client.writeServer(client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.getCoord())));
-                try{
+                try {
                     teamMate.add(client.getGson().fromJson(client.readServer(), JoueurJson.class)); //a terme utiliser fct pour reconnaitre parquet
-                }catch(IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }, 0, 300);
     }
-
-
 
 
 }
