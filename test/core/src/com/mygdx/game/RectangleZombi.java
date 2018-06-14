@@ -1,26 +1,50 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.awt.*;
 
 public class RectangleZombi extends Rectangle {
-    public float dx = MathUtils.random(0, 2) - 1;
+
     public Texture zombiImage;
 
+    private static int nextId = 0;
+    private int id;
+    private int nbShot = 0;
+
+    public float dx = MathUtils.random(0, 2) - 1;
     public float dy = MathUtils.random(0, 2) - 1;
 
 
     public RectangleZombi() {
         super(MathUtils.random(0, 640- 30), MathUtils.random(0, 480 - 30), 30, 30);
+
         zombiImage= new Texture("core/src/resources/zombi1.png");
+
+        id = nextId++;
+
         while (dx == 0 && dy == 0) {
             dx = MathUtils.random(0, 2) - 1;
             dy = MathUtils.random(0, 2) - 1;
         }
 
+    }
+
+    public void updatePosition(){
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getNbShot() {
+        return nbShot;
+    }
+
+    public int getShot(){
+        return ++nbShot;
     }
 
     public void move() {
