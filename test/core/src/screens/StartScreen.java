@@ -30,13 +30,15 @@ public class StartScreen extends GenericScreen {
 
         //-----------Start button-----------
         start = new TextButton("Start", skin);
-        start.setPosition(300,150);
+        start.setPosition(300, 150);
         start.setSize(300, 40);
         start.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+
                 try {
-                    game.setScreen(new GameScreen(game, client));
+                        game.setScreen(new GameScreen(game, client));
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -47,7 +49,7 @@ public class StartScreen extends GenericScreen {
 
         //-----------Commands button-----------
         commands = new TextButton("Commands", skin);
-        commands.setPosition(300,200);
+        commands.setPosition(300, 200);
         commands.setSize(300, 40);
         commands.addListener(new ChangeListener() {
             @Override
@@ -60,7 +62,7 @@ public class StartScreen extends GenericScreen {
 
         //-----------highScors button-----------
         highScors = new TextButton("High scores", skin);
-        highScors.setPosition(300,250);
+        highScors.setPosition(300, 250);
         highScors.setSize(300, 40);
         highScors.addListener(new ChangeListener() {
             @Override

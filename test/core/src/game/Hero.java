@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Hero extends Rectangle{
 
-    private static final int FULL_CHARGOR = 15;
+    private static final int FULL_CHARGOR = 30;
 
     public float dx,dy;
     private int prcHealth;

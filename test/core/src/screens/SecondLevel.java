@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Timer;
 
-public class GameScreen implements Screen {
+public class SecondLevel implements Screen {
     public static Texture backgroundTexture;
     private Client client;
 
@@ -67,7 +67,7 @@ public class GameScreen implements Screen {
     BitmapFont fontChargor = new BitmapFont();
     Texture chargor = new Texture("core/src/resources/charger.png");
 
-    public GameScreen(Zombi_Invasion game, Client client) throws IOException {
+    public SecondLevel(Zombi_Invasion game, Client client) throws IOException {
 
         lastDropTime = TimeUtils.nanoTime();
         this.game = game;
@@ -96,7 +96,7 @@ public class GameScreen implements Screen {
         zombis = new Array<RectangleZombi>();
         bulletsZombi = new Array<RecrangleBullet>();
         bullets = new Array<RecrangleBullet>();
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 5; ++i)
             spawnZombi();
 
     }
@@ -128,15 +128,15 @@ public class GameScreen implements Screen {
 
 
         for (RectangleZombi zombi : zombis) {
-            if(zombi.nbRebound>3){
+            if(zombi.nbRebound>2){
                 zombi.nbRebound=0;
-            RecrangleBullet shotBucket = new RecrangleBullet((int)zombi.x, (int)zombi.y);
-            shotBucket.dx = zombi.dx;
-            shotBucket.dy = zombi.dy;
-            shotBucket.width = 32;
-            shotBucket.height = 32;
-            bulletsZombi.add(shotBucket);
-            batch.draw(zombiShot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);}
+                RecrangleBullet shotBucket = new RecrangleBullet((int)zombi.x, (int)zombi.y);
+                shotBucket.dx = zombi.dx;
+                shotBucket.dy = zombi.dy;
+                shotBucket.width = 32;
+                shotBucket.height = 32;
+                bulletsZombi.add(shotBucket);
+                batch.draw(zombiShot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);}
         }
 
         for (Bonus bonus : bonuses) {
@@ -167,28 +167,28 @@ public class GameScreen implements Screen {
         //Gérer après coup qu'on ne recharge pas inutilement l'image
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
-            hero.x -= 200 * Gdx.graphics.getDeltaTime();
+            hero.x -= 150 * Gdx.graphics.getDeltaTime();
             hero.dx = 1;
             hero.dy = 0;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
-            hero.x += 200 * Gdx.graphics.getDeltaTime();
+            hero.x += 150 * Gdx.graphics.getDeltaTime();
             hero.dx = -1;
             hero.dy = 0;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
-            hero.y -= 200 * Gdx.graphics.getDeltaTime();
+            hero.y -= 150 * Gdx.graphics.getDeltaTime();
             hero.dx = 0;
             hero.dy = 1;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
-            hero.y += 200 * Gdx.graphics.getDeltaTime();
+            hero.y += 150 * Gdx.graphics.getDeltaTime();
             hero.dx = 0;
             hero.dy = -1;
         }
@@ -200,12 +200,13 @@ public class GameScreen implements Screen {
             shotBucket.width = 32;
             shotBucket.height = 32;
             bullets.add(shotBucket);
+            bullets.add(shotBucket);
             hero.shoot();
             lastShot = System.currentTimeMillis();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-                hero.recharge();
+            hero.recharge();
         }
         // make sure the bucket stays within the screen bounds
         if (hero.x < 0)
@@ -216,18 +217,11 @@ public class GameScreen implements Screen {
             hero.y = 0;
         if (hero.y > 480 - 32)
             hero.y = 480 - 32;
-        if(zombis.size==0){
-            try {
-                game.setScreen(new SecondLevel(game,client));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         Iterator<RecrangleBullet> iterbullets = bullets.iterator();
         while (iterbullets.hasNext()) {
             RecrangleBullet bullet = iterbullets.next();
-            bullet.y -= bullet.dy * 200 * Gdx.graphics.getDeltaTime();
-            bullet.x -= bullet.dx * 200 * Gdx.graphics.getDeltaTime();
+            bullet.y -= bullet.dy * 250 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 250 * Gdx.graphics.getDeltaTime();
             if (bullet.x < 0 || bullet.x > 640 || bullet.y < 0 || bullet.y > 480) {
                 iterbullets.remove();
                 break;
@@ -243,8 +237,8 @@ public class GameScreen implements Screen {
         Iterator<RecrangleBullet> iterbulletsZombi = bulletsZombi.iterator();
         while (iterbulletsZombi.hasNext()) {
             RecrangleBullet bullet = iterbulletsZombi.next();
-            bullet.y -= bullet.dy * 300 * Gdx.graphics.getDeltaTime();
-            bullet.x -= bullet.dx * 300 * Gdx.graphics.getDeltaTime();
+            bullet.y -= bullet.dy * 350 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 350 * Gdx.graphics.getDeltaTime();
             if (bullet.x < 0 || bullet.x > 640 || bullet.y < 0 || bullet.y > 480) {
                 iterbulletsZombi.remove();
                 break;
@@ -272,116 +266,74 @@ public class GameScreen implements Screen {
         Iterator<RectangleZombi> iter = zombis.iterator();
         while (iter.hasNext()) {
             RectangleZombi zombi = iter.next();
-            zombi.y -= zombi.dy * 100 * Gdx.graphics.getDeltaTime();
-            zombi.x -= zombi.dx * 100 * Gdx.graphics.getDeltaTime();
+            zombi.y -= zombi.dy * 150 * Gdx.graphics.getDeltaTime();
+            zombi.x -= zombi.dx * 150 * Gdx.graphics.getDeltaTime();
             zombi.move();
-                //enlever ca pour qu'il aura pas le screen you lose
+            //enlever ca pour qu'il aura pas le screen you lose
 
             if(zombi.overlaps(hero)){
                 hero.getEat();
             }
 
             if(zombi.getNbShot() == 3) {
-                if(random.nextInt() % 3 == 0)
+                if(random.nextInt() % 5 == 0)
                     bonuses.add(new Bonus(zombi.x, zombi.y));
                 iter.remove();
                 break;
             }
 
 
-            }
-
-            if(hero.getPrcHealth() <= 0){
-                game.setScreen(new LoseScreen(game,client));
-                dispose();
-            }
-
-            fontHealth.draw(batch, Integer.toString(hero.getPrcHealth()), 10, 30);
-            batch.draw(healt, 6, 32, 32, 32);
-            fontArmor.draw(batch, Integer.toString(hero.getPrcArmor()), 59, 30);
-            batch.draw(armor, 50, 32, 32, 32);
-            fontBullets.draw(batch, Integer.toString(hero.getNbBullets()), 96, 30);
-            batch.draw(bulletsCount, 85, 32, 32, 32);
-            fontChargor.draw(batch, Integer.toString(hero.getNbChargors()), 132, 30);
-            batch.draw(chargor, 130, 32, 32, 32);
-            fontCash.draw(batch, Integer.toString(hero.getNbCash()), 178, 30);
-            batch.draw(cash, 170, 32, 32, 32);
-
-            batch.end();
-
         }
 
-        @Override
-        public void resize ( int width, int height){
+        if(hero.getPrcHealth() <= 0){
+            game.setScreen(new LoseScreen(game,client));
+            dispose();
         }
 
-        private boolean pos_zomb_hero ( float xz, float yz, int xh, int yh){
-            float x = xz - xh;
-            float y = yz - yh;
-            double res = Math.sqrt(x * x + y * y);
-            return res <= 100;
-        }
+        fontHealth.draw(batch, Integer.toString(hero.getPrcHealth()), 10, 30);
+        batch.draw(healt, 6, 32, 32, 32);
+        fontArmor.draw(batch, Integer.toString(hero.getPrcArmor()), 59, 30);
+        batch.draw(armor, 50, 32, 32, 32);
+        fontBullets.draw(batch, Integer.toString(hero.getNbBullets()), 96, 30);
+        batch.draw(bulletsCount, 85, 32, 32, 32);
+        fontChargor.draw(batch, Integer.toString(hero.getNbChargors()), 132, 30);
+        batch.draw(chargor, 130, 32, 32, 32);
+        fontCash.draw(batch, Integer.toString(hero.getNbCash()), 178, 30);
+        batch.draw(cash, 170, 32, 32, 32);
 
-        @Override
-        public void show () {
-            // start the playback of the background music
-            // when the screen is shown
-            // rainMusic.play();
-        }
-
-        @Override
-        public void hide () {
-        }
-
-        @Override
-        public void pause () {
-        }
-
-        @Override
-        public void resume () {
-        }
-
-    /*public void startGame() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-
-                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.x, hero.y));
-                System.out.println(str);
-                ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
-                System.out.println(str2);
-
-                client.writeServer(str);
-
-                try {
-                    //interbloquage.
-                    /*
-                    On se connecte au premier client, envois ses coords puis se bloque en lecture
-                    Serveur recoit est en fait rien
-                    Deuxieme arrive et fait la meme. Nop
-                    Serveur devrait transmettre au premier et relancer le mecanisme
-
-                    PAR CONTRE, serveur va tenter de lire du premier client et va bloquer sur cette instruction
-
-
-
-                    JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
-                    if(!teamMate.contains(joueurJson))
-                        teamMate.add(joueurJson);
-                    System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 3);
-    }*/
-
-        @Override
-        public void dispose () {
-            dropImage.dispose();
-            hero.getHerosImage().dispose();
-        }
-
-
+        batch.end();
 
     }
+
+    @Override
+    public void resize ( int width, int height){
+    }
+
+    @Override
+    public void show () {
+        // start the playback of the background music
+        // when the screen is shown
+        // rainMusic.play();
+    }
+
+    @Override
+    public void hide () {
+    }
+
+    @Override
+    public void pause () {
+    }
+
+    @Override
+    public void resume () {
+    }
+
+    @Override
+    public void dispose () {
+        dropImage.dispose();
+        hero.getHerosImage().dispose();
+    }
+
+
+
+}

@@ -64,8 +64,10 @@ public class Client {
         String response = in.readUTF();
         System.out.println(response);
 
-        if (response.equals("connected") || response.equals("compte créer"))
+        if (response.equals("connected") || response.equals("compte créer")){
+            out.writeUTF("bye");
             return true;
+        }
 
         return false;
     }
