@@ -17,9 +17,10 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.RecrangleBullet;
 import com.mygdx.game.RectangleZombi;
 import com.mygdx.game.Zombi_Invasion;
+import com.badlogic.gdx.math.Rectangle;
 import game.Hero;
 
-import java.awt.*;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -122,7 +123,7 @@ public class GameScreen implements Screen {
             for (RectangleZombi zombi : zombis) {
                 if(zombi.nbRebound>3){
                     zombi.nbRebound=0;
-                RecrangleBullet shotBucket = new RecrangleBullet(zombi.x, zombi.y);
+                RecrangleBullet shotBucket = new RecrangleBullet((int)zombi.x, (int)zombi.y);
                 shotBucket.dx = zombi.dx;
                 shotBucket.dy = zombi.dy;
                 shotBucket.width = 32;
