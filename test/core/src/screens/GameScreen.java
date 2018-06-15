@@ -341,40 +341,6 @@ public class GameScreen implements Screen {
         public void resume () {
         }
 
-    /*public void startGame() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-
-                String str = client.getGson().toJson(new JoueurJson(client.getIdClient(), hero.x, hero.y));
-                System.out.println(str);
-                ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
-                System.out.println(str2);
-
-                client.writeServer(str);
-
-                try {
-                    //interbloquage.
-                    /*
-                    On se connecte au premier client, envois ses coords puis se bloque en lecture
-                    Serveur recoit est en fait rien
-                    Deuxieme arrive et fait la meme. Nop
-                    Serveur devrait transmettre au premier et relancer le mecanisme
-
-                    PAR CONTRE, serveur va tenter de lire du premier client et va bloquer sur cette instruction
-
-
-
-                    JoueurJson joueurJson = client.getGson().fromJson(client.readServer(), JoueurJson.class);
-                    if(!teamMate.contains(joueurJson))
-                        teamMate.add(joueurJson);
-                    System.out.println(joueurJson.getCoord().getX() + " " + joueurJson.getCoord().getY());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 3);
-    }*/
 
         @Override
         public void dispose () {

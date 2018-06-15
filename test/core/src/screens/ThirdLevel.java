@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Timer;
 
-public class SecondLevel implements Screen {
+public class ThirdLevel implements Screen {
     public static Texture backgroundTexture;
     private Client client;
 
@@ -34,6 +34,7 @@ public class SecondLevel implements Screen {
     Zombi_Invasion game;
     Texture dropImage;
     Texture bucketImage;
+    Texture bigZombi = new Texture("core/src/resources/Gargantuar_zonder_imp.png");
     OrthographicCamera camera;
     Random random = new Random();
 
@@ -46,7 +47,7 @@ public class SecondLevel implements Screen {
     //Rectangle bucket;
 
 
-    Texture shot,zombiShot;
+    Texture shot, zombiShot;
     Array<RecrangleBullet> bullets;
 
     Array<RecrangleBullet> bulletsZombi;
@@ -55,6 +56,7 @@ public class SecondLevel implements Screen {
     private Music music_level1;
     int dropsGathered;
     long lastShot = System.currentTimeMillis();
+    RectangleZombi Zombi;
 
     BitmapFont fontCash = new BitmapFont();
     Texture cash = new Texture("core/src/resources/cash.png");
@@ -67,7 +69,7 @@ public class SecondLevel implements Screen {
     BitmapFont fontChargor = new BitmapFont();
     Texture chargor = new Texture("core/src/resources/charger.png");
 
-    public SecondLevel(Zombi_Invasion game, Client client) throws IOException {
+    public ThirdLevel(Zombi_Invasion game, Client client) throws IOException {
 
         lastDropTime = TimeUtils.nanoTime();
         this.game = game;
@@ -78,7 +80,7 @@ public class SecondLevel implements Screen {
         bonuses = new LinkedList<>();
 
         //startGame();
-        zombiShot=new Texture("core/src/resources/bomb_3.gif");
+        zombiShot = new Texture("core/src/resources/bomb_3.gif");
         shot = new Texture("core/src/resources/bomb.jpg");
 
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
@@ -96,9 +98,11 @@ public class SecondLevel implements Screen {
         zombis = new Array<RectangleZombi>();
         bulletsZombi = new Array<RecrangleBullet>();
         bullets = new Array<RecrangleBullet>();
-        for (int i = 0; i < 5; ++i)
-            spawnZombi();
 
+        for (int i = 0; i < 8; ++i)
+            spawnZombi();
+        Zombi = new RectangleZombi();
+        Zombi.zombiImage = bigZombi;
     }
 
     private void spawnZombi() {
@@ -125,18 +129,19 @@ public class SecondLevel implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         batch.draw(hero.getHerosImage(), hero.x, hero.y, hero.width, hero.height);
-
+        batch.draw(Zombi.zombiImage,Zombi.x,Zombi.y,80,80);
 
         for (RectangleZombi zombi : zombis) {
-            if(zombi.nbRebound>2){
-                zombi.nbRebound=0;
-                RecrangleBullet shotBucket = new RecrangleBullet((int)zombi.x, (int)zombi.y);
+            if (zombi.nbRebound > 3) {
+                zombi.nbRebound = 0;
+                RecrangleBullet shotBucket = new RecrangleBullet((int) zombi.x, (int) zombi.y);
                 shotBucket.dx = zombi.dx;
                 shotBucket.dy = zombi.dy;
                 shotBucket.width = 32;
                 shotBucket.height = 32;
                 bulletsZombi.add(shotBucket);
-                batch.draw(zombiShot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);}
+                batch.draw(zombiShot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
+            }
         }
 
         for (Bonus bonus : bonuses) {
@@ -167,28 +172,28 @@ public class SecondLevel implements Screen {
         //Gérer après coup qu'on ne recharge pas inutilement l'image
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary2.png"));
-            hero.x -= 150 * Gdx.graphics.getDeltaTime();
+            hero.x -= 210 * Gdx.graphics.getDeltaTime();
             hero.dx = 1;
             hero.dy = 0;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary3.png"));
-            hero.x += 150 * Gdx.graphics.getDeltaTime();
+            hero.x += 210 * Gdx.graphics.getDeltaTime();
             hero.dx = -1;
             hero.dy = 0;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary1.png"));
-            hero.y -= 150 * Gdx.graphics.getDeltaTime();
+            hero.y -= 210 * Gdx.graphics.getDeltaTime();
             hero.dx = 0;
             hero.dy = 1;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             hero.setHerosImage(new Texture("core/src/resources/mercenary4.png"));
-            hero.y += 150 * Gdx.graphics.getDeltaTime();
+            hero.y += 210 * Gdx.graphics.getDeltaTime();
             hero.dx = 0;
             hero.dy = -1;
         }
@@ -217,24 +222,17 @@ public class SecondLevel implements Screen {
             hero.y = 0;
         if (hero.y > 480 - 32)
             hero.y = 480 - 32;
-        if(zombis.size==0){
-            try {
-                game.setScreen(new ThirdLevel(game,client));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         Iterator<RecrangleBullet> iterbullets = bullets.iterator();
         while (iterbullets.hasNext()) {
             RecrangleBullet bullet = iterbullets.next();
-            bullet.y -= bullet.dy * 250 * Gdx.graphics.getDeltaTime();
-            bullet.x -= bullet.dx * 250 * Gdx.graphics.getDeltaTime();
+            bullet.y -= bullet.dy * 150 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 150 * Gdx.graphics.getDeltaTime();
             if (bullet.x < 0 || bullet.x > 640 || bullet.y < 0 || bullet.y > 480) {
                 iterbullets.remove();
                 break;
             }
-            for(RectangleZombi zombi : zombis){
-                if(zombi.overlaps(bullet)) {
+            for (RectangleZombi zombi : zombis) {
+                if (zombi.overlaps(bullet)) {
                     zombi.getShot();
                     iterbullets.remove();
                     break;
@@ -244,13 +242,13 @@ public class SecondLevel implements Screen {
         Iterator<RecrangleBullet> iterbulletsZombi = bulletsZombi.iterator();
         while (iterbulletsZombi.hasNext()) {
             RecrangleBullet bullet = iterbulletsZombi.next();
-            bullet.y -= bullet.dy * 350 * Gdx.graphics.getDeltaTime();
-            bullet.x -= bullet.dx * 350 * Gdx.graphics.getDeltaTime();
+            bullet.y -= bullet.dy * 310 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 310 * Gdx.graphics.getDeltaTime();
             if (bullet.x < 0 || bullet.x > 640 || bullet.y < 0 || bullet.y > 480) {
                 iterbulletsZombi.remove();
                 break;
             }
-            if(hero.overlaps(bullet)){
+            if (hero.overlaps(bullet)) {
                 iterbulletsZombi.remove();
                 hero.getShot();
                 break;
@@ -260,7 +258,7 @@ public class SecondLevel implements Screen {
         Iterator<Bonus> iterBonus = bonuses.iterator();
         while (iterBonus.hasNext()) {
             Bonus bonus = iterBonus.next();
-            if(bonus.overlaps(hero)){
+            if (bonus.overlaps(hero)) {
                 iterBonus.remove();
                 hero.getObject();
                 break;
@@ -273,17 +271,17 @@ public class SecondLevel implements Screen {
         Iterator<RectangleZombi> iter = zombis.iterator();
         while (iter.hasNext()) {
             RectangleZombi zombi = iter.next();
-            zombi.y -= zombi.dy * 150 * Gdx.graphics.getDeltaTime();
-            zombi.x -= zombi.dx * 150 * Gdx.graphics.getDeltaTime();
+            zombi.y -= zombi.dy * 200 * Gdx.graphics.getDeltaTime();
+            zombi.x -= zombi.dx * 200 * Gdx.graphics.getDeltaTime();
             zombi.move();
             //enlever ca pour qu'il aura pas le screen you lose
 
-            if(zombi.overlaps(hero)){
+            if (zombi.overlaps(hero)) {
                 hero.getEat();
             }
 
-            if(zombi.getNbShot() == 3) {
-                if(random.nextInt() % 5 == 0)
+            if (zombi.getNbShot() == 3) {
+                if (random.nextInt() % 3 == 0)
                     bonuses.add(new Bonus(zombi.x, zombi.y));
                 iter.remove();
                 break;
@@ -292,8 +290,8 @@ public class SecondLevel implements Screen {
 
         }
 
-        if(hero.getPrcHealth() <= 0){
-            game.setScreen(new LoseScreen(game,client));
+        if (hero.getPrcHealth() <= 0) {
+            game.setScreen(new LoseScreen(game, client));
             dispose();
         }
 
@@ -313,34 +311,33 @@ public class SecondLevel implements Screen {
     }
 
     @Override
-    public void resize ( int width, int height){
+    public void resize(int width, int height) {
     }
 
     @Override
-    public void show () {
+    public void show() {
         // start the playback of the background music
         // when the screen is shown
         // rainMusic.play();
     }
 
     @Override
-    public void hide () {
+    public void hide() {
     }
 
     @Override
-    public void pause () {
+    public void pause() {
     }
 
     @Override
-    public void resume () {
+    public void resume() {
     }
 
     @Override
-    public void dispose () {
+    public void dispose() {
         dropImage.dispose();
         hero.getHerosImage().dispose();
     }
-
 
 
 }
