@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * @author oussama lagha
  */
 public class MultiThreadedServer {
-    static LinkedList<MultiThreadedServer.ServantWorker> clients=new LinkedList<>();
+    static LinkedList<MultiThreadedServer.ServantWorker> clients = new LinkedList<>();
     protected int nextIdClient;
     static ServerSocket serverSocket;
     static DataOutputStream out;
@@ -75,73 +75,73 @@ public class MultiThreadedServer {
         return lignes;
     }
 
-/*
+    /*
 
-    public void checkStartGame(){ //deja bloquant, pas besoin de timer, enfin, besoin que de un seul bloquage
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try{
-                    if(!clients.isEmpty()){ //atta atta, tant que empty check toute les sec mais bloquant dés que client sur read
-                        System.out.println(clients.getFirst().readServer());
+        public void checkStartGame(){ //deja bloquant, pas besoin de timer, enfin, besoin que de un seul bloquage
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try{
+                        if(!clients.isEmpty()){ //atta atta, tant que empty check toute les sec mais bloquant dés que client sur read
+                            System.out.println(clients.getFirst().readServer());
+                        }
+                    }catch (IOException e){
+                        e.printStackTrace();
                     }
-                }catch (IOException e){
-                    e.printStackTrace();
                 }
-            }
-        }, 0, 1000);
-    }
-
-    public void startGame(){
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try{
-                    manageTraffic();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 300);
-    }
-
-    public TypePaquet getResponseClass(String str){
-        ClientJson tmp = moteurJson.fromJson(str, ClientJson.class);
-        return tmp.getTypePaquet();
-    }
-
-    public ClientJson parseResponse(String str){
-        ClientJson tmp = moteurJson.fromJson(str, ClientJson.class);
-
-        switch (tmp.getTypePaquet()){
-            case CLIENT:
-                return tmp;
-            case HERO:
-                return moteurJson.fromJson(str, JoueurJson.class);
-            case ENNEMY:
-                return moteurJson.fromJson(str, EnnemyJson.class);
-            case BONUS:
-                return moteurJson.fromJson(str, BonusJson.class);
-            default:
-                return null;
+            }, 0, 1000);
         }
-    }
-/*
 
-    public void sendDataToOtherClients(int id, String data){
-        int count = 0;
-        for(ReceptionistWorker.ServantWorker worker : clients){
-            if(count++ != id)
+        public void startGame(){
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try{
+                        manageTraffic();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }, 0, 300);
+        }
+
+        public TypePaquet getResponseClass(String str){
+            ClientJson tmp = moteurJson.fromJson(str, ClientJson.class);
+            return tmp.getTypePaquet();
+        }
+
+        public ClientJson parseResponse(String str){
+            ClientJson tmp = moteurJson.fromJson(str, ClientJson.class);
+
+            switch (tmp.getTypePaquet()){
+                case CLIENT:
+                    return tmp;
+                case HERO:
+                    return moteurJson.fromJson(str, JoueurJson.class);
+                case ENNEMY:
+                    return moteurJson.fromJson(str, EnnemyJson.class);
+                case BONUS:
+                    return moteurJson.fromJson(str, BonusJson.class);
+                default:
+                    return null;
+            }
+        }
+    /*
+
+        public void sendDataToOtherClients(int id, String data){
+            int count = 0;
+            for(ReceptionistWorker.ServantWorker worker : clients){
+                if(count++ != id)
+                    worker.writeServer(data);
+            }
+        }
+
+        public void broadcast(String data){
+            for(ReceptionistWorker.ServantWorker worker : clients){
                 worker.writeServer(data);
-        }
-    }
+            }
 
-    public void broadcast(String data){
-        for(ReceptionistWorker.ServantWorker worker : clients){
-            worker.writeServer(data);
-        }
-
-    }*/
+        }*/
 /*
 
 
@@ -192,22 +192,27 @@ public class MultiThreadedServer {
         while (true) {
 
             try {
-                Socket clientSocket = serverSocket.accept();
-                out = new DataOutputStream(clientSocket.getOutputStream());
-                in = new DataInputStream(clientSocket.getInputStream());
-                clients = new LinkedList<>();
+                if (clients.size() < 4) {
+                    Socket clientSocket = serverSocket.accept();
+                    out = new DataOutputStream(clientSocket.getOutputStream());
+                    in = new DataInputStream(clientSocket.getInputStream());
+                    clients = new LinkedList<>();
 
-                ServantWorker servantWorker = new ServantWorker(in, out, clients);
+                    ServantWorker servantWorker = new ServantWorker(in, out, clients);
 
-                clients.add(servantWorker);      //Add client to the clients list
+                    clients.add(servantWorker);      //Add client to the clients list
 
-                new Thread(servantWorker).start();
+                    System.out.print(clients.size());
+                    new Thread(servantWorker).start();
+                }
 
-            } catch (IOException ex) {
-                Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch(IOException ex){
+                    Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
-    }
+
+
     /*
             récup string, lire premier champ avec id, puis déserialiser en fonction
                 ------Paquet de transit------
