@@ -103,7 +103,7 @@ public class MultiThreadedServer {
             worker.writeServer(data);
         }
     }
-
+/*
     public void handleShots(int idZombi){
         for(RectangleZombi ennemy : ennemis){
             if(idZombi == ennemy.getId()) {
@@ -114,7 +114,7 @@ public class MultiThreadedServer {
                 return;
             }
         }
-    }
+    }*/
 
 
     public void manageTraffic() throws IOException{
