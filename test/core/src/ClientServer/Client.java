@@ -91,7 +91,6 @@ public class Client {
 
         String response = in.readUTF();
 
-        System.out.println(response);
         if (response.equals("connected")) {
             out.writeUTF("bye");
             return true;

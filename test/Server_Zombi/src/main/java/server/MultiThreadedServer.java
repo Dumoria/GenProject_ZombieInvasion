@@ -1,9 +1,8 @@
 package server;
 
 import ClientServer.Json.*;
-import com.google.gson.*;
+import com.google.gson.Gson;
 import com.mygdx.game.RectangleZombi;
-
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -75,6 +74,7 @@ public class MultiThreadedServer {
 
         return lignes;
     }
+
 /*
 
     public void checkStartGame(){ //deja bloquant, pas besoin de timer, enfin, besoin que de un seul bloquage
@@ -140,18 +140,24 @@ public class MultiThreadedServer {
         for(ReceptionistWorker.ServantWorker worker : clients){
             worker.writeServer(data);
         }
+
     }*/
 /*
 
+
     public void manageTraffic() throws IOException{
 
+        int size = clients.size() - 1;
         //Deal with the input received from each client
-        for(ReceptionistWorker.ServantWorker worker : clients){
+        for(int i = size; i >= 0; --i){
 
+            System.out.println("before");
             //Read input
-            String clientData = worker.readServer();
+            String clientData = clients.get(i).readServer();
+
             ClientJson clientJson = parseResponse(clientData);
             int id = clientJson.getIdClient();
+            System.out.println(clientData);
 
             switch (clientJson.getTypePaquet()){
                 case CLIENT:    //Pour deconnexion
@@ -172,9 +178,7 @@ public class MultiThreadedServer {
         }
 
 
-        //Send new zombis position
-        broadcast(moteurJson.toJson(ennemis));
-    }*/
+
 
     /**
      * This method initiates the process. The server creates a socket and binds it
@@ -184,6 +188,7 @@ public class MultiThreadedServer {
      * client sends the "BYE" command.
      */
     public void serveClients() {
+
         while (true) {
 
             try {
@@ -191,7 +196,6 @@ public class MultiThreadedServer {
                 out = new DataOutputStream(clientSocket.getOutputStream());
                 in = new DataInputStream(clientSocket.getInputStream());
                 clients = new LinkedList<>();
-
 
                 ServantWorker servantWorker = new ServantWorker(in, out, clients);
 
@@ -648,10 +652,10 @@ ublic class MultiThreadedServer {
                             ligne = in.readUTF();
                             userToAdd = moteurJson.fromJson(ligne, UserJson.class);
                             if (userList.exist(userToAdd)) {
-                                out.writeUTF("connected\n");
+                                out.writeUTF("connected");
                             } else {
                                 userList.addUser(userToAdd);
-                                out.writeUTF("compte créer\n");
+                                out.writeUTF("compte créer");
                             }
                             out.flush();
                             break;
