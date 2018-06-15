@@ -45,8 +45,10 @@ public class GameScreen implements Screen {
     //Rectangle bucket;
 
 
-    Texture shot;
+    Texture shot,zombiShot;
     Array<RecrangleBullet> bullets;
+
+    Array<RecrangleBullet> bulletsZombi;
     Array<RectangleZombi> zombis;
     long lastDropTime;
     private Music music_level1;
@@ -63,7 +65,7 @@ public class GameScreen implements Screen {
         bonuses = new LinkedList<>();
 
         startGame();
-
+        zombiShot=new Texture("core/src/resources/bomb_3.gif");
         shot = new Texture("core/src/resources/bomb.jpg");
 
         music_level1 = Gdx.audio.newMusic(Gdx.files.internal("core/src/resources/Towards The End.mp3"));
@@ -79,6 +81,7 @@ public class GameScreen implements Screen {
 
         // create the zombis array and spawn the first raindrop
         zombis = new Array<RectangleZombi>();
+        bulletsZombi = new Array<RecrangleBullet>();
         bullets = new Array<RecrangleBullet>();
         for (int i = 0; i < 7; ++i)
             spawnZombi();
@@ -116,6 +119,19 @@ public class GameScreen implements Screen {
         // all drops
         //batch.draw(bucketImage, hero.getHero().x, hero.getHero().y, hero.getHero().width, hero.getHero().height);
 
+            for (RectangleZombi zombi : zombis) {
+                if(zombi.nbRebound>3){
+                    zombi.nbRebound=0;
+                RecrangleBullet shotBucket = new RecrangleBullet(zombi.x, zombi.y);
+                shotBucket.dx = zombi.dx;
+                shotBucket.dy = zombi.dy;
+                shotBucket.width = 32;
+                shotBucket.height = 32;
+                bulletsZombi.add(shotBucket);
+                batch.draw(zombiShot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);}
+            }
+
+
         for (JoueurJson joueurJson : teamMate) {
             batch.draw(hero.getHerosImage(), joueurJson.getCoord().getX(), joueurJson.getCoord().getY(), hero.width, hero.height);
         }
@@ -125,6 +141,9 @@ public class GameScreen implements Screen {
         }
         for (Rectangle bullet : bullets) {
             batch.draw(shot, bullet.x, bullet.y);
+        }
+        for (Rectangle bullet : bulletsZombi) {
+            batch.draw(zombiShot, bullet.x, bullet.y);
         }
         // process user input
         if (Gdx.input.isTouched()) {
@@ -163,7 +182,6 @@ public class GameScreen implements Screen {
             hero.y += 200 * Gdx.graphics.getDeltaTime();
             hero.dx = 0;
             hero.dy = -1;
-
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             RecrangleBullet shotBucket = new RecrangleBullet((int) hero.x, (int) hero.y);
@@ -172,10 +190,7 @@ public class GameScreen implements Screen {
             shotBucket.width = 32;
             shotBucket.height = 32;
             bullets.add(shotBucket);
-            batch.draw(shot, shotBucket.x, shotBucket.y, shotBucket.width, shotBucket.height);
-
         }
-
         // make sure the bucket stays within the screen bounds
         if (hero.x < 0)
             hero.x = 0;
@@ -194,6 +209,15 @@ public class GameScreen implements Screen {
                 iterbullets.remove();
             }
         }
+        Iterator<RecrangleBullet> iterbulletsZombi = bulletsZombi.iterator();
+        while (iterbulletsZombi.hasNext()) {
+            RecrangleBullet bullet = iterbulletsZombi.next();
+            bullet.y -= bullet.dy * 300 * Gdx.graphics.getDeltaTime();
+            bullet.x -= bullet.dx * 300 * Gdx.graphics.getDeltaTime();
+            if (bullet.x < 0 || bullet.x > 640 || bullet.y < 0 || bullet.y > 480) {
+                iterbulletsZombi.remove();
+            }
+        }
 
         // move the zombis, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
@@ -203,22 +227,7 @@ public class GameScreen implements Screen {
             RectangleZombi zombi = iter.next();
             zombi.y -= zombi.dy * 100 * Gdx.graphics.getDeltaTime();
             zombi.x -= zombi.dx * 100 * Gdx.graphics.getDeltaTime();
-            if (zombi.x < 0){
-                zombi.dx *= -1;
-                zombi.zombiImage=new Texture("core/src/resources/zombi1.png");
-            }
-            if (zombi.x > 640 - 30) {
-                zombi.dx *= -1;
-                zombi.zombiImage=new Texture("core/src/resources/zombi3.png");
-
-            }
-            if (zombi.y < 0){
-                zombi.dy *= -1;
-                zombi.zombiImage=new Texture("core/src/resources/zombi4.png");}
-            if (zombi.y > 480 - 30) {
-                zombi.dy *= -1;
-                zombi.zombiImage=new Texture("core/src/resources/zombi2.png");
-            }
+                zombi.move();
                 //enlever ca pour qu'il aura pas le screen you lose
 
             /*
