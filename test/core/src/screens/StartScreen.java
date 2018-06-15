@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.mygdx.game.Zombi_Invasion;
 
+import java.io.IOException;
+
 public class StartScreen extends GenericScreen {
 
 
@@ -33,7 +35,11 @@ public class StartScreen extends GenericScreen {
         start.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game, client));
+                try {
+                    game.setScreen(new GameScreen(game, client));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

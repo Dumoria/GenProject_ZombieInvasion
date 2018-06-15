@@ -20,6 +20,7 @@ import com.mygdx.game.Zombi_Invasion;
 import game.Bonus;
 import game.Hero;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -66,7 +67,7 @@ public class GameScreen implements Screen {
     BitmapFont fontChargor = new BitmapFont();
     Texture chargor = new Texture("core/src/resources/charger.png");
 
-    public GameScreen(Zombi_Invasion game, Client client) {
+    public GameScreen(Zombi_Invasion game, Client client) throws IOException {
 
         lastDropTime = TimeUtils.nanoTime();
         this.game = game;
@@ -395,7 +396,6 @@ public class GameScreen implements Screen {
             dropImage.dispose();
             hero.getHerosImage().dispose();
         }
-
 
 
 
