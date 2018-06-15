@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -23,15 +24,15 @@ import java.util.logging.Logger;
  * @author oussama lagha
  */
 public class MultiThreadedServer {
-
-    private final static Logger LOG = Logger.getLogger(MultiThreadedServer.class.getName());
+    static LinkedList<MultiThreadedServer.ServantWorker> clients=new LinkedList<>();
+    protected int nextIdClient;
+    static ServerSocket serverSocket;
+    static DataOutputStream out;
+    static DataInputStream in;
     private Gson moteurJson = new Gson();
-    private int port;
     private static UserList userList;
 
-    protected LinkedList<ReceptionistWorker.ServantWorker> clients;
     protected LinkedList<RectangleZombi> ennemis;
-    protected Timer timer;
 
     /**
      * Constructor
@@ -39,9 +40,16 @@ public class MultiThreadedServer {
      * @param port the port to listen on
      */
     public MultiThreadedServer(int port) {
-        this.port = port;
-        clients = new LinkedList<>();
+        try {
+            serverSocket = new ServerSocket(port);
+            //timer = new Timer();
+            //un seul timer pour l'ensemble des clients
+            //checkStartGame();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         chargeUserList("Server_Zombi/src/main/java/server/Player.json");
+        serveClients();
     }
 
     void chargeUserList(String JsonFileName) {
@@ -67,7 +75,7 @@ public class MultiThreadedServer {
 
         return lignes;
     }
-
+/*
 
     public void checkStartGame(){ //deja bloquant, pas besoin de timer, enfin, besoin que de un seul bloquage
         timer.schedule(new TimerTask() {
@@ -118,7 +126,7 @@ public class MultiThreadedServer {
                 return null;
         }
     }
-
+/*
 
     public void sendDataToOtherClients(int id, String data){
         int count = 0;
@@ -132,19 +140,8 @@ public class MultiThreadedServer {
         for(ReceptionistWorker.ServantWorker worker : clients){
             worker.writeServer(data);
         }
-    }
-
-    public void handleShots(int idZombi){
-        for(RectangleZombi ennemy : ennemis){
-            if(idZombi == ennemy.getId()) {
-
-                //Shoot zombi and check if dead
-                if(ennemy.getShot() == 3)
-                    ennemis.remove(ennemy); //Eventuellement transmettre alors deathNotification
-                return;
-            }
-        }
-    }
+    }*/
+/*
 
     public void manageTraffic() throws IOException{
 
@@ -174,14 +171,10 @@ public class MultiThreadedServer {
 
         }
 
-        //Zombis position update
-        for(RectangleZombi ennemy : ennemis){
-            ennemy.updatePosition();
-        }
 
         //Send new zombis position
         broadcast(moteurJson.toJson(ennemis));
-    }
+    }*/
 
     /**
      * This method initiates the process. The server creates a socket and binds it
@@ -191,176 +184,27 @@ public class MultiThreadedServer {
      * client sends the "BYE" command.
      */
     public void serveClients() {
-        LOG.info("Starting the Receptionist Worker on a new thread...");
-        new Thread(new ReceptionistWorker(clients)).start();
-    }
-
-    /**
-     * This inner class implements the behavior of the "receptionist", whose
-     * responsibility is to listen for incoming connection requests. As soon as a
-     * new client has arrived, the receptionist delegates the processing to a
-     * "servant" who will execute on its own thread.
-     */
-    private class ReceptionistWorker implements Runnable {
-
-        protected LinkedList<ReceptionistWorker.ServantWorker> clients;
-        protected int nextIdClient;
-        private ServerSocket serverSocket;
-
-        public ReceptionistWorker(LinkedList<ReceptionistWorker.ServantWorker> clients) {
-            this.clients = clients;
-        }
-
-        @Override
-        public void run() {
+        while (true) {
 
             try {
-                serverSocket = new ServerSocket(port);
-                //timer = new Timer();
-                //un seul timer pour l'ensemble des clients
-                //checkStartGame();
+                Socket clientSocket = serverSocket.accept();
+                out = new DataOutputStream(clientSocket.getOutputStream());
+                in = new DataInputStream(clientSocket.getInputStream());
+                clients = new LinkedList<>();
+
+
+                ServantWorker servantWorker = new ServantWorker(in, out, clients);
+
+                clients.add(servantWorker);      //Add client to the clients list
+
+                new Thread(servantWorker).start();
+
             } catch (IOException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-                return;
-            }
-
-            while (true) {
-                LOG.log(Level.INFO, "Waiting (blocking) for a new client on port " + port);
-                try {
-                    Socket clientSocket = serverSocket.accept();
-                    LOG.info("A new client has arrived. Starting a new thread and delegating work to a new servant...");
-
-                    ServantWorker servantWorker = new ServantWorker(clientSocket);
-                    clients.add(servantWorker);      //Add client to the clients list
-
-                    new Thread(servantWorker).start();
-
-                } catch (IOException ex) {
-                    Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-        }
-
-        /**
-         * This inner class implements the behavior of the "servants", whose
-         * responsibility is to take care of clients once they have connected. This
-         * is where we implement the application protocol logic, i.e. where we read
-         * data sent by the client and where we generate the responses.
-         */
-        private class ServantWorker implements Runnable {
-
-            Socket clientSocket;
-            BufferedReader in = null;
-            PrintWriter out = null;
-            private Boolean done=false;
-
-            public ServantWorker(Socket clientSocket) {
-                try {
-                    this.clientSocket = clientSocket;
-                    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    out = new PrintWriter(clientSocket.getOutputStream());
-                } catch (IOException ex) {
-                    Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            public String readServer() throws IOException{
-                return in.readLine();
-            }
-
-            public void writeServer(String data){
-                out.write(data);
-                out.flush();
-            }
-
-            @Override
-            public void run() {
-                String command = "";
-
-                out.println("Welcome to the Multi-Threaded Server. Send me text lines and conclude with the BYE command. Your id is:");
-                out.flush();
-
-                out.println(++nextIdClient);
-                out.flush();
-
-                try {
-                    LOG.info("Reading the client data or closes the connection...");
-                    while(!done&& ((command = in.readLine()) != null)) {
-                        switch (command.toUpperCase()){
-                            case ServerProtocol.CMD_BYE:
-                                done=true;
-                                LOG.info("Cleaning up resources...");
-                                clientSocket.close();
-                                in.close();
-                                out.close();
-                                break;
-                            case ServerProtocol.CMD_CONNECT:
-                                String line;
-                                UserJson user = new UserJson("", "");
-                                while (!userList.exist(user)) {
-                                    line = in.readLine();
-                                    user = moteurJson.fromJson(line, UserJson.class);
-
-                                    if (userList.exist(user)) {
-                                        out.write("connected\n");
-                                    } else {
-                                        out.write("disconnected\n");
-                                    }
-                                    out.flush();
-                                }
-                                break;
-                            case ServerProtocol.CMD_CREATE:
-                                String ligne;
-                                UserJson userToAdd ;
-                                ligne=in.readLine();
-                                userToAdd= moteurJson.fromJson(ligne, UserJson.class);
-                                if(userList.exist(userToAdd)){
-                                    out.write("connected\n");
-                                }
-                                else{
-                                    userList.addUser(userToAdd);
-                                    out.write("compte créer\n");
-                                }
-                                out.flush();
-                                break;
-                        }
-
-                        try {
-                            //System.out.println(clients.getFirst().readServer());
-                            manageTraffic();
-                        }catch(IOException e){
-
-                        }
-                    }
-
-                } catch (IOException ex) {
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (IOException ex1) {
-                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
-                        }
-                    }
-                    if (out != null) {
-                        out.close();
-                    }
-                    if (clientSocket != null) {
-                        try {
-                            clientSocket.close();
-                        } catch (IOException ex1) {
-                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
-                        }
-                    }
-                    LOG.log(Level.SEVERE, ex.getMessage(), ex);
-                }
-
+                Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-}
-
-                /*
+    /*
             récup string, lire premier champ avec id, puis déserialiser en fonction
                 ------Paquet de transit------
                 Paquet hero:
@@ -740,3 +584,183 @@ ublic class MultiThreadedServer {
         }
     }
 */
+
+    /**
+     * This inner class implements the behavior of the "servants", whose
+     * responsibility is to take care of clients once they have connected. This
+     * is where we implement the application protocol logic, i.e. where we read
+     * data sent by the client and where we generate the responses.
+     */
+    class ServantWorker implements Runnable {
+        List<ServantWorker> clients;
+        DataOutputStream out;
+        DataInputStream in;
+        private Boolean done = false;
+
+        public ServantWorker(DataInputStream in, DataOutputStream out, List<ServantWorker> clients) {
+            this.in = in;
+            this.out = out;
+            this.clients = clients;
+        }
+
+        /*
+
+        public String readServer() throws IOException{
+            return in.readLine();
+        }
+
+        public void writeServer(String data){
+            out.write(data);
+            out.flush();
+        }
+    */
+        @Override
+        public void run() {
+            String command = "";
+
+            try {
+                while (!done) {
+                    command = in.readUTF();
+                    System.out.print(command);
+                    switch (command.toUpperCase()) {
+                        case ServerProtocol.CMD_BYE:
+                            done = true;
+                            break;
+                        case ServerProtocol.CMD_CONNECT:
+                            String line;
+                            UserJson user = new UserJson("", "");
+                            while (!userList.exist(user)) {
+                                line = in.readUTF();
+                                System.out.print(line);
+                                user = moteurJson.fromJson(line, UserJson.class);
+
+                                if (userList.exist(user)) {
+                                    out.writeUTF("connected");
+                                } else {
+                                    out.writeUTF("disconnected");
+                                }
+                                out.flush();
+                            }
+                            break;
+                        case ServerProtocol.CMD_CREATE:
+                            String ligne;
+                            UserJson userToAdd;
+                            ligne = in.readUTF();
+                            userToAdd = moteurJson.fromJson(ligne, UserJson.class);
+                            if (userList.exist(userToAdd)) {
+                                out.writeUTF("connected\n");
+                            } else {
+                                userList.addUser(userToAdd);
+                                out.writeUTF("compte créer\n");
+                            }
+                            out.flush();
+                            break;
+                    }
+
+                }
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+
+            while (true) {
+                if (clients.size() == 4) {
+                    try {
+                        String msg = in.readUTF();
+                        for (ServantWorker s : clients) {
+                            s.out.writeUTF(msg);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+                /*
+                String command = "";
+
+                out.println("Welcome to the Multi-Threaded Server. Send me text lines and conclude with the BYE command. Your id is:");
+                out.flush();
+
+                out.println(++nextIdClient);
+                out.flush();
+
+                try {
+                    LOG.info("Reading the client data or closes the connection...");
+                    while(!done&& ((command = in.readLine()) != null)) {
+                        switch (command.toUpperCase()){
+                            case ServerProtocol.CMD_BYE:
+                                done=true;
+                                LOG.info("Cleaning up resources...");
+                                clientSocket.close();
+                                in.close();
+                                out.close();
+                                break;
+                            case ServerProtocol.CMD_CONNECT:
+                                String line;
+                                UserJson user = new UserJson("", "");
+                                while (!userList.exist(user)) {
+                                    line = in.readLine();
+                                    user = moteurJson.fromJson(line, UserJson.class);
+
+                                    if (userList.exist(user)) {
+                                        out.write("connected\n");
+                                    } else {
+                                        out.write("disconnected\n");
+                                    }
+                                    out.flush();
+                                }
+                                break;
+                            case ServerProtocol.CMD_CREATE:
+                                String ligne;
+                                UserJson userToAdd ;
+                                ligne=in.readLine();
+                                userToAdd= moteurJson.fromJson(ligne, UserJson.class);
+                                if(userList.exist(userToAdd)){
+                                    out.write("connected\n");
+                                }
+                                else{
+                                    userList.addUser(userToAdd);
+                                    out.write("compte créer\n");
+                                }
+                                out.flush();
+                                break;
+                        }
+
+                        try {
+                            //System.out.println(clients.getFirst().readServer());
+                            manageTraffic();
+                        }catch(IOException e){
+
+                        }
+                    }
+
+                } catch (IOException ex) {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException ex1) {
+                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+                        }
+                    }
+                    if (out != null) {
+                        out.close();
+                    }
+                    if (clientSocket != null) {
+                        try {
+                            clientSocket.close();
+                        } catch (IOException ex1) {
+                            LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+                        }
+                    }
+                    LOG.log(Level.SEVERE, ex.getMessage(), ex);
+                }
+
+            }
+        }
+    }*/
+
+        }
+    }
+}

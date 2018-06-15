@@ -55,7 +55,7 @@ public class GameScreen implements Screen {
     private Music music_level1;
     int dropsGathered;
 
-    public GameScreen(Zombi_Invasion game, Client client) {
+    public GameScreen(Zombi_Invasion game, Client client) throws IOException {
 
         lastDropTime = TimeUtils.nanoTime();
         this.game = game;
@@ -302,7 +302,11 @@ public class GameScreen implements Screen {
                     ClientJson str2 = client.getGson().fromJson(str, ClientJson.class);
                     System.out.println(str2);
 
-                    client.writeServer(str);
+                    try {
+                        client.writeServer(str);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     //if(!teamMate.isEmpty()) {
                     try {

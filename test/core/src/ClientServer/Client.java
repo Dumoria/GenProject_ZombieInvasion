@@ -9,10 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import game.Hero;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Timer;
@@ -25,8 +22,8 @@ public class Client {
     //----------------Server connection members-------------------
     private static final Logger LOG = Logger.getLogger(Client.class.getName());
     private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    private DataInputStream in;
+    private DataOutputStream out;
     private boolean connected;
     private Gson gson;
     private int logged;
@@ -47,80 +44,82 @@ public class Client {
 
     //---------------Methods-------------------------------------
 
-    public boolean createUser(String username, String password)throws  IOException{
+    public boolean createUser(String username, String password) throws IOException {
 
         this.username = username;
         this.password = password;
-        if(!connected)
+        if (!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
-        if(this.username.isEmpty() || this.password.isEmpty()){
+        if (this.username.isEmpty() || this.password.isEmpty()) {
             System.out.println("Error: Username and/or Password should not be empty");
             return false;
         }
 
-        String tmp=gson.toJson(new UserJson(this.username,this.password));
+        String tmp = gson.toJson(new UserJson(this.username, this.password));
         System.out.println(tmp);
 
         writeServer("create");
         writeServer(tmp);
 
-        String response=in.readLine();
+        String response = in.readUTF();
         System.out.println(response);
 
-        if(response.equals("connected")||response.equals("compte créer"))
+        if (response.equals("connected") || response.equals("compte créer"))
             return true;
 
         return false;
     }
 
-    public void consultStats(){
+    public void consultStats() {
 
     }
 
-    public boolean loginUser(String username, String password) throws IOException{
+    public boolean loginUser(String username, String password) throws IOException {
         this.username = username;
         this.password = password;
 
-        if(!connected)
+        if (!connected)
             connect(Protocol.DEFAULT_ADDRESS, Protocol.DEFAULT_PORT);
-        if(this.username.isEmpty() || this.password.isEmpty()){
+        if (this.username.isEmpty() || this.password.isEmpty()) {
             System.out.println("Error: Username and/or Password should not be empty");
         }
 
-        String tmp=gson.toJson(new UserJson(this.username,this.password));
+        String tmp = gson.toJson(new UserJson(this.username, this.password));
         System.out.println(tmp);
         writeServer("connect");
         writeServer(tmp);
 
-        String response=in.readLine();
-        System.out.println(response);
-        if(response.equals("connected"))
-            return true;
+        String response = in.readUTF();
 
+        System.out.println(response);
+        if (response.equals("connected")) {
+            out.writeUTF("bye");
+            return true;
+        }
         return false;
     }
 
     public void connect(String server, int port) throws IOException {
         //Connect the client
         socket = new Socket(server, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream());
+        in = new DataInputStream(socket.getInputStream());
+        out = new DataOutputStream(socket.getOutputStream());
         connected = true;
 
         //Get a unique id from the server and create his hero
-        System.out.println(readServer());
-        idClient = Integer.parseInt(readServer());
+        //System.out.println(readServer());
+        // idClient = Integer.parseInt(readServer());
     }
 
     public void disconnect() throws IOException {
 
-        if(socket != null) {
+        if (socket != null) {
             socket.close();
         }
-        if(in != null) {
+        if (in != null) {
             in.close();
         }
-        if(out != null) {
+        if (out != null) {
             out.close();
         }
 
@@ -132,12 +131,12 @@ public class Client {
 
     }
 
-    public String readServer() throws IOException{
-        return in.readLine();
+    public String readServer() throws IOException {
+        return in.readUTF();
     }
 
-    public void writeServer(String str){
-        out.write(str + '\n');
+    public void writeServer(String str) throws IOException {
+        out.writeUTF(str);
         out.flush();
     }
 
